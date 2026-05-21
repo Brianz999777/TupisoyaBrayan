@@ -1,0 +1,302 @@
+<app-floating-configurator />
+
+<form [formGroup]="formRegister" (submit)="register()">
+    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden py-12">
+        <div class="flex flex-col items-center justify-center w-full max-w-4xl">
+            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)" class="w-full">
+                <div class="w-full bg-surface-0 dark:bg-surface-900 py-12 px-8 sm:px-20" style="border-radius: 53px">
+                    <div class="text-center mb-8">
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Crea tu cuenta</div>
+                        <span class="text-muted-color font-medium">Únete a TuPisoYa hoy mismo</span>
+                    </div>
+
+                    <p-tabs [(value)]="activeTab" styleClass="mb-4">
+                        <p-tablist>
+                            <p-tab value="0">Persona Natural</p-tab>
+                            <p-tab value="1">Persona Jurídica</p-tab>
+                        </p-tablist>
+                        <p-tabpanels>
+                            <!-- Persona Natural -->
+                            <p-tabpanel value="0">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                                    <div>
+                                        <label for="nombre" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Nombre</label>
+                                        <input
+                                            pInputText
+                                            id="nombre"
+                                            type="text"
+                                            placeholder="Nombres"
+                                            class="w-full mb-2"
+                                            formControlName="nombre_per"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('nombre_per')?.invalid && (formRegister.get('nombre_per')?.dirty || formRegister.get('nombre_per')?.touched) }"
+                                        />
+                                        @if (formRegister.get('nombre_per')?.invalid && (formRegister.get('nombre_per')?.dirty || formRegister.get('nombre_per')?.touched)) {
+                                        <small class="text-red-500 mb-4 block">El nombre es obligatorio.</small>
+                                        }
+                                    </div>
+                                    <div>
+                                        <label for="apellido" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Apellido Paterno</label>
+                                        <input
+                                            pInputText
+                                            id="apellido"
+                                            type="text"
+                                            placeholder="Apellido Paterno"
+                                            class="w-full mb-2"
+                                            formControlName="apellido_pat_per"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('apellido_pat_per')?.invalid && (formRegister.get('apellido_pat_per')?.dirty || formRegister.get('apellido_pat_per')?.touched) }"
+                                        />
+                                        @if (formRegister.get('apellido_pat_per')?.invalid && (formRegister.get('apellido_pat_per')?.dirty || formRegister.get('apellido_pat_per')?.touched)) {
+                                        <small class="text-red-500 mb-4 block">El apellido paterno es obligatorio.</small>
+                                        }
+                                    </div>
+                                    <div>
+                                        <label for="apellidoMat" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Apellido Materno</label>
+                                        <input pInputText id="apellidoMat" type="text" placeholder="Apellido Materno" class="w-full mb-2" formControlName="apellido_mat_per" />
+                                    </div>
+                                    <div>
+                                        <label for="sexo" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Sexo</label>
+                                        <div class="flex gap-4 mt-4">
+                                            <div class="flex items-center">
+                                                <input type="radio" value="M" formControlName="sexo_per" id="sexo_m" class="mr-2" />
+                                                <label for="sexo_m">Masculino</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="radio" value="F" formControlName="sexo_per" id="sexo_f" class="mr-2" />
+                                                <label for="sexo_f">Femenino</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="anioNac" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Año de Nacimiento</label>
+                                        <input
+                                            pInputText
+                                            id="anioNac"
+                                            maxlength="4"
+                                            minlength="4"
+                                            type="number"
+                                            placeholder="Ej. 1990"
+                                            class="w-full mb-2"
+                                            formControlName="anio_nac_per"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('anio_nac_per')?.invalid && (formRegister.get('anio_nac_per')?.dirty || formRegister.get('anio_nac_per')?.touched) }"
+                                        />
+                                        @if (formRegister.get('anio_nac_per')?.invalid && (formRegister.get('anio_nac_per')?.dirty || formRegister.get('anio_nac_per')?.touched)) {
+                                        <small class="text-red-500 mb-4 block">El año es obligatorio.</small>
+                                        }
+                                    </div>
+
+                                    <div class="md:col-span-1">
+                                        <label for="ingresos" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Ingresos Aproximados</label>
+                                        <input pInputText id="ingresos" type="number" placeholder="2500.0" class="w-full mb-2" formControlName="ingresos_aprox_natu" />
+                                    </div>
+                                    <div class="flex flex-col gap-2 mb-3">
+                                        <div class="flex items-center gap-2 mt-8">
+                                            <p-checkbox formControlName="primer_vivienda_natu" id="primerVivienda" binary></p-checkbox>
+                                            <label for="primerVivienda" class="text-surface-900 dark:text-surface-0 font-medium">¿Es tu primera vivienda?</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p-tabpanel>
+
+                            <!-- Persona Jurídica -->
+                            <p-tabpanel value="1">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                                    <div>
+                                        <label for="razonSocial" class="block text-surface-900 dark:text-surface-0 text-lg font-medium mb-2">Razón Social</label>
+                                        <input
+                                            pInputText
+                                            id="razonSocial"
+                                            type="text"
+                                            placeholder="Nombre de la empresa"
+                                            class="w-full"
+                                            formControlName="nombre_per"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('nombre_per')?.invalid && (formRegister.get('nombre_per')?.dirty || formRegister.get('nombre_per')?.touched) }"
+                                        />
+                                        @if (formRegister.get('nombre_per')?.invalid && (formRegister.get('nombre_per')?.dirty || formRegister.get('nombre_per')?.touched)) {
+                                        <small class="text-red-500 block mt-1">La razón social es obligatoria.</small>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        <label for="cargo" class="block text-surface-900 dark:text-surface-0 text-lg font-medium mb-2">Cargo</label>
+                                        <input
+                                            pInputText
+                                            id="cargo"
+                                            type="text"
+                                            placeholder="Tu cargo en la empresa"
+                                            class="w-full"
+                                            formControlName="cargo_jur"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('cargo_jur')?.invalid && (formRegister.get('cargo_jur')?.dirty || formRegister.get('cargo_jur')?.touched) }"
+                                        />
+                                        @if (formRegister.get('cargo_jur')?.invalid && (formRegister.get('cargo_jur')?.dirty || formRegister.get('cargo_jur')?.touched)) {
+                                        <small class="text-red-500 block mt-1">El cargo es obligatorio.</small>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        <label for="representante" class="block text-surface-900 dark:text-surface-0 text-lg font-medium mb-2">Nombre Representante</label>
+                                        <input
+                                            pInputText
+                                            id="representante"
+                                            type="text"
+                                            placeholder="Nombre completo"
+                                            class="w-full"
+                                            formControlName="nombre_representante_jur"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('nombre_representante_jur')?.invalid && (formRegister.get('nombre_representante_jur')?.dirty || formRegister.get('nombre_representante_jur')?.touched) }"
+                                        />
+                                        @if (formRegister.get('nombre_representante_jur')?.invalid && (formRegister.get('nombre_representante_jur')?.dirty || formRegister.get('nombre_representante_jur')?.touched)) {
+                                        <small class="text-red-500 block mt-1">El nombre del representante es obligatorio.</small>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        <label for="mercantil" class="block text-surface-900 dark:text-surface-0 text-lg font-medium mb-2">Registro Mercantil</label>
+                                        <input
+                                            pInputText
+                                            id="mercantil"
+                                            type="text"
+                                            placeholder="Número de registro"
+                                            class="w-full"
+                                            formControlName="registro_mercantil_ju"
+                                            [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('registro_mercantil_ju')?.invalid && (formRegister.get('registro_mercantil_ju')?.dirty || formRegister.get('registro_mercantil_ju')?.touched) }"
+                                        />
+                                        @if (formRegister.get('registro_mercantil_ju')?.invalid && (formRegister.get('registro_mercantil_ju')?.dirty || formRegister.get('registro_mercantil_ju')?.touched)) {
+                                        <small class="text-red-500 block mt-1">El registro es obligatorio.</small>
+                                        }
+                                    </div>
+                                </div>
+                            </p-tabpanel>
+                        </p-tabpanels>
+                    </p-tabs>
+
+                    <!-- Common Persona Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="md:col-span-2 border-t pt-6 mb-2">
+                            <h3 class="text-xl font-semibold mb-4">Información de contacto y domicilio</h3>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="doc" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">{{ activeTab === '0' ? 'Número de Documento (DNI)' : 'RUC / Identificación' }}</label>
+                            <input
+                                pInputText
+                                id="doc"
+                                type="text"
+                                [placeholder]="activeTab === '0' ? 'DNI' : 'RUC'"
+                                class="w-full mb-2"
+                                formControlName="nro_doc_per"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('nro_doc_per')?.invalid && (formRegister.get('nro_doc_per')?.dirty || formRegister.get('nro_doc_per')?.touched) }"
+                            />
+                            @if (formRegister.get('nro_doc_per')?.invalid && (formRegister.get('nro_doc_per')?.dirty || formRegister.get('nro_doc_per')?.touched)) {
+                            <small class="text-red-500 mb-4 block">El número de documento es obligatorio.</small>
+                            }
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="domicilio" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Domicilio</label>
+                            <input
+                                pInputText
+                                id="domicilio"
+                                type="text"
+                                placeholder="Calle, número, departamento"
+                                class="w-full mb-2"
+                                formControlName="domicilio_per"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('domicilio_per')?.invalid && (formRegister.get('domicilio_per')?.dirty || formRegister.get('domicilio_per')?.touched) }"
+                            />
+                            @if (formRegister.get('domicilio_per')?.invalid && (formRegister.get('domicilio_per')?.dirty || formRegister.get('domicilio_per')?.touched)) {
+                            <small class="text-red-500 mb-4 block">El domicilio es obligatorio.</small>
+                            }
+                        </div>
+                        <div>
+                            <label for="cp" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Código Postal</label>
+                            <input
+                                pInputText
+                                id="cp"
+                                type="text"
+                                placeholder="Ej. 1000"
+                                class="w-full mb-2"
+                                formControlName="cp_per"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('cp_per')?.invalid && (formRegister.get('cp_per')?.dirty || formRegister.get('cp_per')?.touched) }"
+                            />
+                            @if (formRegister.get('cp_per')?.invalid && (formRegister.get('cp_per')?.dirty || formRegister.get('cp_per')?.touched)) {
+                            <small class="text-red-500 mb-4 block">El CP es obligatorio.</small>
+                            }
+                        </div>
+                        <div>
+                            <label for="provincia" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Provincia</label>
+                            <input
+                                pInputText
+                                id="provincia"
+                                type="text"
+                                placeholder="Ej. Lima"
+                                class="w-full mb-2"
+                                formControlName="provincia_per"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('provincia_per')?.invalid && (formRegister.get('provincia_per')?.dirty || formRegister.get('provincia_per')?.touched) }"
+                            />
+                            @if (formRegister.get('provincia_per')?.invalid && (formRegister.get('provincia_per')?.dirty || formRegister.get('provincia_per')?.touched)) {
+                            <small class="text-red-500 mb-4 block">La provincia es obligatoria.</small>
+                            }
+                        </div>
+
+                        <div class="md:col-span-2 border-t pt-6 mb-2 mt-4">
+                            <h3 class="text-xl font-semibold mb-4">Credenciales de acceso</h3>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo electrónico</label>
+                            <input
+                                pInputText
+                                id="email"
+                                type="text"
+                                placeholder="email@ejemplo.com"
+                                class="w-full mb-2"
+                                formControlName="email"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('email')?.invalid && (formRegister.get('email')?.dirty || formRegister.get('email')?.touched) }"
+                            />
+                            @if (formRegister.get('email')?.invalid && (formRegister.get('email')?.dirty || formRegister.get('email')?.touched)) {
+                            <small class="text-red-500 mb-4 block"> @if (formRegister.get('email')?.errors?.['required']) { El correo es obligatorio. } @if (formRegister.get('email')?.errors?.['email']) { Formato no válido. } </small>
+                            }
+                        </div>
+                        <div>
+                            <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
+                            <p-password
+                                id="password"
+                                formControlName="password"
+                                placeholder="Mínimo 8 caracteres"
+                                [toggleMask]="true"
+                                styleClass="w-full mb-2"
+                                [fluid]="true"
+                                [feedback]="true"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formRegister.get('password')?.invalid && (formRegister.get('password')?.dirty || formRegister.get('password')?.touched) }"
+                            ></p-password>
+                            @if (formRegister.get('password')?.invalid && (formRegister.get('password')?.dirty || formRegister.get('password')?.touched)) {
+                            <small class="text-red-500 mb-4 block"> @if (formRegister.get('password')?.errors?.['required']) { La contraseña es obligatoria. } @if (formRegister.get('password')?.errors?.['minlength']) { Mínimo 8 caracteres. } </small>
+                            }
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Confirmar Contraseña</label>
+                            <p-password
+                                id="confirmPassword"
+                                formControlName="confirmPassword"
+                                placeholder="Confirmar"
+                                [toggleMask]="true"
+                                styleClass="w-full mb-2"
+                                [fluid]="true"
+                                [feedback]="false"
+                                [ngClass]="{ 'ng-invalid ng-dirty': (formRegister.get('confirmPassword')?.invalid || formRegister.errors?.['mismatch']) && (formRegister.get('confirmPassword')?.dirty || formRegister.get('confirmPassword')?.touched) }"
+                            ></p-password>
+                            @if ((formRegister.get('confirmPassword')?.invalid || formRegister.errors?.['mismatch']) && (formRegister.get('confirmPassword')?.dirty || formRegister.get('confirmPassword')?.touched)) {
+                            <small class="text-red-500 mb-4 block"> @if (formRegister.get('confirmPassword')?.errors?.['required']) { Debe confirmar la contraseña. } @if (formRegister.errors?.['mismatch']) { Las contraseñas no coinciden. } </small>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <p-button label="Crear Cuenta" styleClass="w-full py-4 text-xl" (onClick)="register()" [disabled]="isSubmitting" [loading]="isSubmitting"> </p-button>
+                    </div>
+
+                    <div class="text-center mt-6">
+                        <span class="text-muted-color">¿Ya tienes una cuenta? </span>
+                        <a routerLink="/login" class="font-medium no-underline text-primary cursor-pointer ml-1">Inicia sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div>{{ formRegister.value | json }}</div>

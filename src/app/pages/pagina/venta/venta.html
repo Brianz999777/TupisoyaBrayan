@@ -1,0 +1,71 @@
+<div class="property-card" (click)="verDetalle()">
+    <div class="card-inner">
+        <!-- Imagen Section -->
+        <div class="image-area">
+            <img [src]="mainPhoto" [alt]="'Propiedad ' + inmueble.id_prop" class="property-img" />
+            
+            <div class="badges-overlay">
+                <span class="energy-badge">
+                    <i class="pi pi-bolt"></i>
+                    {{ inmueble.clase_energetica_venta || 'En trámite' }}
+                </span>
+            </div>
+
+            <div class="photo-count-glass">
+                <i class="pi pi-camera"></i>
+                <span>{{ inmueble.fotos?.length || 1 }}</span>
+            </div>
+
+            <div class="reformed-badge" *ngIf="inmueble.reforma_venta">
+                REFORMADO
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-area">
+            <div class="main-info">
+                <div class="header-row">
+                    <h3 class="address-text">{{ fullAddress }}</h3>
+                    <button pButton icon="pi pi-heart" class="p-button-rounded p-button-text fav-btn" (click)="$event.stopPropagation()"></button>
+                </div>
+
+                <div class="price-text">
+                    {{ inmueble.precio_venta | currency:'EUR':'symbol':'1.0-0' }}
+                </div>
+
+                <div class="features-row">
+                    <div class="feat-item" *ngIf="inmueble.nro_habitaciones_venta">
+                        <i class="pi pi-home"></i>
+                        <span>{{ inmueble.nro_habitaciones_venta }} habs.</span>
+                    </div>
+                    <div class="feat-item">
+                        <i class="pi pi-box"></i>
+                        <span>{{ inmueble.nro_banos_prop }} baños</span>
+                    </div>
+                    <div class="feat-item">
+                        <i class="pi pi-expand"></i>
+                        <span>{{ inmueble.metros_prop }} m²</span>
+                    </div>
+                    <div class="feat-item">
+                        <i class="pi pi-arrow-up"></i>
+                        <span>Planta {{ inmueble.planta_prop }}</span>
+                    </div>
+                </div>
+
+                <p class="description-preview">{{ inmueble.descripcion_formateada }}</p>
+            </div>
+
+            <div class="footer-row">
+                <div class="tags-container">
+                    <span class="utility-tag" *ngIf="inmueble.aire_acondicionado_venta">
+                        <i class="pi pi-sun"></i> Aire acondicionado
+                    </span>
+                </div>
+                <div class="actions-container" (click)="$event.stopPropagation()">
+                    <button pButton label="Contactar" icon="pi pi-envelope" class="btn-outline-premium"></button>
+                    <button pButton label="Llamar" icon="pi pi-phone" class="btn-primary-premium"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

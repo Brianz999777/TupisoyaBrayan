@@ -1,0 +1,414 @@
+<div class="bg-surface-0 dark:bg-surface-900 min-h-screen flex flex-col">
+    <div class="overflow-hidden flex flex-col flex-1">
+        <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
+
+        <!-- ===== HERO PERFIL ===== -->
+        <section class="perfil-hero">
+            <div class="hero-bg-pattern"></div>
+            <div class="px-6 lg:px-20 relative z-10">
+                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                    <!-- Avatar -->
+                    <div class="avatar-wrapper">
+                        <div class="avatar-ring">
+                            <p-avatar
+                                [label]="getInitials()"
+                                size="xlarge"
+                                shape="circle"
+                                styleClass="profile-avatar"
+                                [style]="{ 'background': 'linear-gradient(135deg, #D4E157, #A3C92A)', 'color': '#1A262F', 'font-size': '2.5rem', 'font-weight': '900', 'width': '120px', 'height': '120px' }"
+                            ></p-avatar>
+                        </div>
+                        <div class="avatar-role-badge">
+                            <i [class]="getRoleIcon()"></i>
+                            <span>{{ getRole() }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="hero-info text-center md:text-left">
+                        <h1 class="hero-name">{{ getFullName() }}</h1>
+                        <p class="hero-email">{{ getEmail() }}</p>
+                        <div class="hero-meta">
+                            <span class="meta-chip">
+                                <i class="pi pi-id-card"></i>
+                                {{ getDocumentType() }}: {{ getDocument() }}
+                            </span>
+                            <span class="meta-chip">
+                                <i [class]="getRoleIcon()"></i>
+                                {{ getRole() }}
+                            </span>
+                            <span class="meta-chip">
+                                <i class="pi pi-building"></i>
+                                {{ getPersonType() }}
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <!-- Actions -->
+                    <div class="hero-actions ml-auto">
+                        <button pButton
+                            label="Cerrar sesión"
+                            icon="pi pi-sign-out"
+                            class="logout-btn"
+                            (click)="logout()"
+                            pTooltip="Cerrar sesión"
+                            tooltipPosition="bottom">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTENIDO PRINCIPAL ===== -->
+        <section class="perfil-content py-16">
+            <div class="px-6 lg:px-20">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- COLUMNA IZQUIERDA (2/3) -->
+                    <div class="lg:col-span-2 space-y-8">
+
+                        <!-- Información Personal -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="card-header-icon">
+                                    <i class="pi pi-user"></i>
+                                </div>
+                                <div>
+                                    <h3 class="card-title">Información Personal</h3>
+                                    <p class="card-subtitle">Tus datos registrados en TuPisoYa</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Nombre completo</span>
+                                        <span class="info-value">{{ getFullName() }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Correo electrónico</span>
+                                        <span class="info-value">{{ getEmail() }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Documento</span>
+                                        <span class="info-value">{{ getDocument() }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Rol</span>
+                                        <span class="info-value">
+                                            <span class="role-chip">
+                                                <i [class]="getRoleIcon()"></i>
+                                                {{ getRole() }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seguridad / Cambiar Contraseña -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="card-header-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                    <i class="pi pi-lock"></i>
+                                </div>
+                                <div>
+                                    <h3 class="card-title">Seguridad</h3>
+                                    <p class="card-subtitle">Gestiona tu contraseña y mantén tu cuenta segura</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                @if (!showPasswordForm) {
+                                    <div class="security-info-box">
+                                        <div class="security-icon">
+                                            <i class="pi pi-shield"></i>
+                                        </div>
+                                        <div class="security-text">
+                                            <span class="font-bold text-gray-900 dark:text-white">Contraseña segura</span>
+                                            <span class="text-gray-500 dark:text-gray-400 text-sm">Mantén tu cuenta segura actualizando tu contraseña regularmente</span>
+                                        </div>
+                                        <button pButton
+                                            label="Cambiar contraseña"
+                                            icon="pi pi-key"
+                                            class="change-pw-btn"
+                                            (click)="togglePasswordForm()">
+                                        </button>
+                                    </div>
+                                } @else {
+                                    <form [formGroup]="changePasswordForm" (submit)="changePassword()" class="password-form">
+                                        @if (errorMsg) {
+                                            <div class="password-error">
+                                                <i class="pi pi-exclamation-triangle"></i>
+                                                <span>{{ errorMsg }}</span>
+                                            </div>
+                                        }
+
+                                        <div class="field">
+                                            <label for="currentPassword" class="field-label">Contraseña actual</label>
+                                            <p-password
+                                                id="currentPassword"
+                                                formControlName="currentPassword"
+                                                placeholder="Ingresa tu contraseña actual"
+                                                [toggleMask]="true"
+                                                [feedback]="false"
+                                                styleClass="w-full"
+                                                [fluid]="true"
+                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('currentPassword')?.invalid && (changePasswordForm.get('currentPassword')?.dirty || changePasswordForm.get('currentPassword')?.touched) }"
+                                            ></p-password>
+                                            @if (changePasswordForm.get('currentPassword')?.invalid && (changePasswordForm.get('currentPassword')?.dirty || changePasswordForm.get('currentPassword')?.touched)) {
+                                                <small class="text-red-500">
+                                                    @if (changePasswordForm.get('currentPassword')?.errors?.['required']) { La contraseña actual es obligatoria. }
+                                                    @if (changePasswordForm.get('currentPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. }
+                                                </small>
+                                            }
+                                        </div>
+
+                                        <div class="field">
+                                            <label for="newPassword" class="field-label">Nueva contraseña</label>
+                                            <p-password
+                                                id="newPassword"
+                                                formControlName="newPassword"
+                                                placeholder="Mín. 8 carac. y 1 especial (!@#$%^&*)"
+                                                [toggleMask]="true"
+                                                [feedback]="true"
+                                                styleClass="w-full"
+                                                [fluid]="true"
+                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched) }"
+                                            ></p-password>
+                                            @if (changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)) {
+                                                <small class="text-red-500">
+                                                    @if (changePasswordForm.get('newPassword')?.errors?.['required']) { La nueva contraseña es obligatoria. }
+                                                    @if (changePasswordForm.get('newPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. }
+                                                    @if (changePasswordForm.get('newPassword')?.errors?.['passwordPattern']) { Debe contener exactamente 1 carácter especial (!@#$%^&*). }
+                                                </small>
+                                            }
+                                        </div>
+
+                                        <div class="field">
+                                            <label for="confirmPassword" class="field-label">Confirmar nueva contraseña</label>
+                                            <p-password
+                                                id="confirmPassword"
+                                                formControlName="confirmPassword"
+                                                placeholder="Repite tu nueva contraseña"
+                                                [toggleMask]="true"
+                                                [feedback]="false"
+                                                styleClass="w-full"
+                                                [fluid]="true"
+                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('confirmPassword')?.invalid && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched) }"
+                                            ></p-password>
+                                            @if (changePasswordForm.get('confirmPassword')?.errors?.['required'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
+                                                <small class="text-red-500">Debes confirmar la nueva contraseña.</small>
+                                            }
+                                            @if (changePasswordForm.get('confirmPassword')?.errors?.['mismatch'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
+                                                <small class="text-red-500">Las contraseñas no coinciden.</small>
+                                            }
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button pButton
+                                                label="Cancelar"
+                                                icon="pi pi-times"
+                                                class="btn-cancel"
+                                                type="button"
+                                                (click)="togglePasswordForm()">
+                                            </button>
+                                            <button pButton
+                                                [label]="submitting ? 'Actualizando...' : 'Actualizar contraseña'"
+                                                icon="pi pi-check"
+                                                class="btn-save"
+                                                type="submit"
+                                                [disabled]="changePasswordForm.invalid || submitting"
+                                                [loading]="submitting">
+                                            </button>
+                                        </div>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- MIS ALERTAS -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="card-header-icon" style="background: linear-gradient(135deg, #D4E157, #A3C92A);">
+                                    <i class="pi pi-bell"></i>
+                                </div>
+                                <div>
+                                    <h3 class="card-title">Mis Alertas</h3>
+                                    <p class="card-subtitle">Recibe notificaciones cuando haya nuevas propiedades</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                @if (alertasCargando) {
+                                    <div class="flex items-center justify-center py-8">
+                                        <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+                                    </div>
+                                } @else if (alertasError) {
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                                            <i class="pi pi-exclamation-triangle text-2xl text-red-400"></i>
+                                        </div>
+                                        <p class="text-red-500 font-medium">Error al cargar alertas</p>
+                                        <p class="text-gray-400 text-sm mt-1">{{ alertasErrorMsg }}</p>
+                                        <button pButton
+                                            label="Reintentar"
+                                            icon="pi pi-refresh"
+                                            class="p-button-text mt-3"
+                                            (click)="cargarAlertas()">
+                                        </button>
+                                    </div>
+                                } @else if (alertas.length === 0) {
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                            <i class="pi pi-bell-slash text-2xl text-gray-400"></i>
+                                        </div>
+                                        <p class="text-gray-500 font-medium">No tienes alertas configuradas</p>
+                                        <p class="text-gray-400 text-sm mt-1">Busca propiedades y crea una alerta para recibir notificaciones</p>
+                                    </div>
+                                } @else {
+                                    <div class="alertas-list">
+                                        @for (alerta of alertas; track alerta.id_alerta) {
+                                            <div class="alerta-item">
+                                                <div class="alerta-item-icon">
+                                                    <i class="pi pi-bell"></i>
+                                                </div>
+                                                <div class="alerta-item-info">
+                                                    <span class="alerta-item-title">
+                                                        @if (alerta.cp_alerta && alerta.provincia_alerta) {
+                                                            {{ alerta.cp_alerta }} - {{ alerta.provincia_alerta }}
+                                                        } @else if (alerta.cp_alerta) {
+                                                            CP: {{ alerta.cp_alerta }}
+                                                        } @else if (alerta.provincia_alerta) {
+                                                            {{ alerta.provincia_alerta }}
+                                                        } @else {
+                                                            Todas las propiedades
+                                                        }
+                                                    </span>
+                                                    <span class="alerta-item-email">
+                                                        <i class="pi pi-envelope"></i>
+                                                        {{ alerta.correo_alerta }}
+                                                    </span>
+                                                    <span class="alerta-item-date">
+                                                        @if (alerta.fecha_creacion) {
+                                                            <i class="pi pi-calendar"></i>
+                                                            {{ alerta.fecha_creacion | date:'dd/MM/yyyy' }}
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <button pButton
+                                                    icon="pi pi-trash"
+                                                    class="alerta-delete-btn"
+                                                    (click)="confirmarEliminarAlerta(alerta)"
+                                                    pTooltip="Eliminar alerta"
+                                                    tooltipPosition="left"
+                                                ></button>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- COLUMNA DERECHA (1/3) -->
+                    <div class="space-y-8">
+
+                        <!-- Publicar Anuncio -->
+                        <div class="publish-card">
+                            <div class="publish-glow"></div>
+                            <div class="publish-content">
+                                <div class="publish-icon-circle">
+                                    <i class="pi pi-megaphone"></i>
+                                </div>
+                                <h3 class="publish-title">¡Publica tu anuncio!</h3>
+                                <p class="publish-desc">
+                                    ¿Tienes una propiedad para vender o alquilar? Llega a miles de personas interesadas.
+                                </p>
+                                <div class="publish-benefits">
+                                    <div class="benefit-row">
+                                        <i class="pi pi-check-circle"></i>
+                                        <span>Llega a más compradores</span>
+                                    </div>
+                                    <div class="benefit-row">
+                                        <i class="pi pi-check-circle"></i>
+                                        <span>Publicación gratuita</span>
+                                    </div>
+                                    <div class="benefit-row">
+                                        <i class="pi pi-check-circle"></i>
+                                        <span>Gestión sencilla</span>
+                                    </div>
+                                </div>
+                                <button pButton
+                                    label="Publicar ahora"
+                                    icon="pi pi-plus-circle"
+                                    class="publish-btn"
+                                    (click)="goToPublish()">
+                                </button>
+                                <button pButton
+                                    label="Mis publicaciones"
+                                    icon="pi pi-list"
+                                    class="my-pubs-btn"
+                                    (click)="goToPublicaciones()">
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Notificaciones -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="card-header-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                    <i class="pi pi-bell"></i>
+                                </div>
+                                <div>
+                                    <h3 class="card-title">Notificaciones</h3>
+                                    <p class="card-subtitle">
+                                        Últimas notificaciones
+                                        @if (notificacionesNoLeidas > 0) {
+                                            <span class="noti-badge">{{ notificacionesNoLeidas }} sin leer</span>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                @if (notificacionesCargando) {
+                                    <div class="flex items-center justify-center py-8">
+                                        <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+                                    </div>
+                                } @else if (notificaciones.length === 0) {
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                            <i class="pi pi-inbox text-2xl text-gray-400"></i>
+                                        </div>
+                                        <p class="text-gray-500 font-medium">No tienes notificaciones</p>
+                                        <p class="text-gray-400 text-sm mt-1">Las notificaciones aparecerán aquí cuando tengas nuevas propiedades que coincidan con tus alertas</p>
+                                    </div>
+                                } @else {
+                                    <div class="activity-list">
+                                        @for (noti of notificaciones; track noti.id_noti) {
+                                            <div class="activity-item" [class.noti-unread]="!noti.leida_noti" (click)="irANotificacion(noti)" style="cursor: pointer;">
+                                                <div class="activity-dot" [class.bg-purple-500]="!noti.leida_noti" [class.bg-gray-300]="noti.leida_noti"></div>
+                                                <div class="activity-info">
+                                                    <span class="activity-text">{{ noti.mensaje_noti }}</span>
+                                                    <span class="activity-time">{{ noti.fecha_noti | date:'dd/MM/yyyy HH:mm' }}</span>
+                                                </div>
+                                                @if (!noti.leida_noti) {
+                                                    <span class="noti-dot"></span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer-widget class="mt-auto" />
+</div>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
