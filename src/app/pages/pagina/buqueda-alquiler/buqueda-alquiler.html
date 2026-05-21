@@ -1,43 +1,44 @@
-<div class="search-results-wrapper">
-    <div class="grid grid-cols-12 gap-8 pt-6">
-        <!-- Panel de Filtros -->
-        <div class="col-span-12 lg:col-span-3">
-            <app-filtro-alquiler #filtroAlquiler (onFilterChange)="handleFilter($event)"></app-filtro-alquiler>
-        </div>
-
-        <!-- Listado de Resultados -->
-        <div class="col-span-12 lg:col-span-9">
-            <div class="results-header">
-                <div class="header-left">
-                    <p class="location-label">Zaragoza y alrededores</p>
-                    <h2 class="main-title">Propiedades en Alquiler</h2>
-                </div>
-                <div class="count-badge">
-                    <span class="count-number">{{ inmueblesFiltrados.length }}</span>
-                    <span class="count-text">Inmuebles encontrados</span>
-                </div>
-            </div>
-
-            <p-dataView #dv [value]="inmueblesFiltrados" layout="list" [rows]="10" [paginator]="true" class="custom-dataview">
-                <ng-template #list let-items>
-                    <div class="results-grid">
-                        <div *ngFor="let item of items">
-                            <app-alquiler [inmueble]="item" (onVerDetalle)="seleccionarInmueble($event)"></app-alquiler>
-                        </div>
-                    </div>
-                </ng-template>
-
-                <ng-template #empty>
-                    <div class="empty-state-card">
-                        <div class="empty-icon-wrap">
-                            <i class="pi pi-search"></i>
-                        </div>
-                        <h3 class="empty-title">No hay resultados</h3>
-                        <p class="empty-text">Prueba a ajustar los filtros para encontrar lo que buscas.</p>
-                        <button pButton label="Limpiar filtros" class="btn-outline-premium mt-4" (click)="limpiarFiltros()"></button>
-                    </div>
-                </ng-template>
-            </p-dataView>
-        </div>
+<div class="max-w-[90rem] mx-auto px-8 lg:px-24 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Panel de Filtros -->
+    <div class="lg:col-span-3">
+      <app-filtro-alquiler #filtroAlquiler (onFilterChange)="handleFilter($event)"></app-filtro-alquiler>
     </div>
+
+    <!-- Listado de Resultados -->
+    <div class="lg:col-span-9">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
+        
+        <div class="inline-flex items-center gap-2.5 bg-gray-900 dark:bg-gray-100 px-5 py-2.5 rounded-2xl shadow-lg">
+          <span class="text-lg font-black text-emerald-400 dark:text-emerald-600">{{ inmueblesFiltrados.length }}</span>
+          <span class="text-sm font-bold text-white dark:text-gray-900">Inmuebles encontrados</span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <p-dataView #dv [value]="inmueblesFiltrados" layout="list" [rows]="10" [paginator]="true" class="custom-dataview">
+        <ng-template #list let-items>
+          <div class="flex flex-col gap-5">
+            <div *ngFor="let item of items">
+              <app-alquiler [inmueble]="item" (onVerDetalle)="seleccionarInmueble($event)"></app-alquiler>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template #empty>
+          <div class="flex flex-col items-center justify-center py-20 px-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 text-center">
+            <div class="w-20 h-20 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-6">
+              <i class="pi pi-search text-3xl text-gray-300"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No hay resultados</h3>
+            <p class="text-gray-500 dark:text-gray-400 max-w-xs mb-6">Prueba a ajustar los filtros para encontrar lo que buscas.</p>
+            <button pButton label="Limpiar filtros"
+              class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-md !shadow-emerald-500/20"
+              (click)="limpiarFiltros()"></button>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </div>
 </div>

@@ -10,6 +10,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { PropiedadAlquiler, PropiedadVenta } from '../../interfaces/inmueble';
 import { InmuebleService } from '../../service/inmueble.service';
+import { TopbarWidget } from '../topbar/topbarwidget.component';
+import { FooterWidget } from '../topbar/footerwidget';
 
 @Component({
   selector: 'app-detalle-inmueble',
@@ -22,7 +24,9 @@ import { InmuebleService } from '../../service/inmueble.service';
     ButtonModule,
     DividerModule,
     InputTextModule,
-    TextareaModule
+    TextareaModule,
+    TopbarWidget,
+    FooterWidget
   ],
   templateUrl: './detalle-inmueble.html',
   styleUrl: './detalle-inmueble.scss',

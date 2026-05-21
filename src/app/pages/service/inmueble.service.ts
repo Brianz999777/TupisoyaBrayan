@@ -9,7 +9,7 @@ import { PropiedadVenta, PropiedadAlquiler, InmuebleVentaDto, TarjetaVenta, Tarj
 export class InmuebleService {
   private http = inject(HttpClient);
   // Asumiendo que esta es tu URL base para inmuebles (ajústala según tu backend)
-  private readonly baseUrl = 'http://localhost:8080/tupisoya/inmuebles';
+  private readonly baseUrl = '/tupisoya/inmuebles';
 
   getVentas(): Observable<TarjetaVenta[]> {
     return this.http.get<TarjetaVenta[]>(`${this.baseUrl}/ventas`);
@@ -42,9 +42,9 @@ export class InmuebleService {
     return this.http.post<any>(`${this.baseUrl}/alquiler`, payload);
   }
 
-  updateVenta(id: number, venta: PropiedadVenta): Observable<PropiedadVenta> {
+  updateVenta(id: number, venta: any): Observable<any> {
     const payload = { ...venta, type: 'venta' };
-    return this.http.put<PropiedadVenta>(`${this.baseUrl}/ventas/${id}`, payload);
+    return this.http.put<any>(`${this.baseUrl}/ventas/${id}`, payload);
   }
 
   insertAlquiler(alquiler: PropiedadAlquiler): Observable<PropiedadAlquiler> {
@@ -52,9 +52,9 @@ export class InmuebleService {
     return this.http.post<PropiedadAlquiler>(`${this.baseUrl}/alquiler`, payload);
   }
 
-  updateAlquiler(id: number, alquiler: PropiedadAlquiler): Observable<PropiedadAlquiler> {
+  updateAlquiler(id: number, alquiler: any): Observable<any> {
     const payload = { ...alquiler, type: 'alquiler' };
-    return this.http.put<PropiedadAlquiler>(`${this.baseUrl}/alquiler/${id}`, payload);
+    return this.http.put<any>(`${this.baseUrl}/alquiler/${id}`, payload);
   }
 
   // Publicaciones del usuario logueado
@@ -72,5 +72,10 @@ export class InmuebleService {
 
   deleteAlquiler(id: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/alquiler/${id}`);
+  }
+
+  subirFotos(propiedadId: number, type: string, formData: FormData): Observable<any> {
+    const endpoint = type === 'venta' ? 'ventas' : 'alquiler';
+    return this.http.post<any>(`${this.baseUrl}/${endpoint}/${propiedadId}/fotos`, formData);
   }
 }

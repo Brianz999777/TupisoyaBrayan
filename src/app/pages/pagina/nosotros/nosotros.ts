@@ -3,223 +3,98 @@ import { CommonModule } from '@angular/common';
 import { FooterWidget } from '../topbar/footerwidget';
 import { TopbarWidget } from '../topbar/topbarwidget.component';
 
-
 @Component({
     selector: 'app-nosotros',
     standalone: true,
     imports: [CommonModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="min-h-screen flex flex-col bg-surface-0 dark:bg-surface-900">
-            <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
-            <div class="flex-1">
-                <!-- Hero Section -->
-                <section class="nosotros-hero">
-                    <div class="hero-glow"></div>
-                    <div class="px-6 lg:px-20 text-center relative z-10">
-                        <h1 class="hero-title">Transformamos la forma de <span class="text-[#1A262F]">encontrar hogar</span></h1>
-                        <p class="hero-subtitle">En TuPisoYa, no solo listamos propiedades; construimos puentes hacia tus sueños. Somos la plataforma líder que combina tecnología avanzada con un trato humano excepcional.</p>
-                    </div>
-                </section>
+        <div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+            <topbar-widget />
 
-                <!-- Stats / Why Us -->
-                <section class="py-20 bg-[#f8fafc] dark:bg-surface-900">
-                    <div class="px-6 lg:px-20">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #D4E157, #A3C92A);">
-                                    <i class="pi pi-users text-3xl text-[#1A262F]"></i>
-                                </div>
-                                <h3 class="stat-title">Comunidad</h3>
-                                <p class="stat-desc">Más de 50,000 usuarios confían mensualmente en nosotros para encontrar su próximo destino.</p>
+            <!-- Hero -->
+            <section class="relative pt-32 pb-20 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900"></div>
+                <div class="absolute top-1/3 -left-32 w-96 h-96 bg-emerald-200/20 dark:bg-emerald-500/5 rounded-full blur-3xl"></div>
+                <div class="relative z-10 max-w-[120rem] mx-auto px-8 lg:px-32 text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-6">
+                        <i class="pi pi-info-circle text-xs"></i>
+                        <span>Conócenos</span>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
+                        Transformamos la forma de
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">encontrar hogar</span>
+                    </h1>
+                    <p class="text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                        En TuPisoYa, no solo listamos propiedades; construimos puentes hacia tus sueños. Somos la plataforma líder que combina tecnología avanzada con un trato humano excepcional.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Stats -->
+            <section class="py-20 bg-gray-50 dark:bg-gray-900/50">
+                <div class="max-w-[120rem] mx-auto px-8 lg:px-32">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mx-auto mb-5">
+                                <i class="pi pi-users text-2xl text-white"></i>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                                    <i class="pi pi-shield text-3xl text-white"></i>
-                                </div>
-                                <h3 class="stat-title">Seguridad</h3>
-                                <p class="stat-desc">Verificamos cada anuncio para garantizar que tu experiencia sea 100% segura y libre de fraudes.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Comunidad</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Más de 50,000 usuarios confían mensualmente en nosotros para encontrar su próximo destino.</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-5">
+                                <i class="pi pi-shield text-2xl text-white"></i>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                                    <i class="pi pi-bolt text-3xl text-white"></i>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Seguridad</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Verificamos cada anuncio para garantizar que tu experiencia sea 100% segura y libre de fraudes.</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center mx-auto mb-5">
+                                <i class="pi pi-bolt text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Rapidez</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Nuestro buscador inteligente te ahorra horas de navegación, mostrándote solo lo que te importa.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mission / Vision -->
+            <section class="py-20">
+                    <div class="max-w-[120rem] mx-auto px-8 lg:px-32">
+                    <div class="flex flex-col md:flex-row items-center gap-16">
+                        <div class="w-full md:w-1/2">
+                            <div class="relative">
+                                <div class="absolute -inset-4 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-3xl opacity-20 blur-xl"></div>
+                                <img src="/demo/images/galleria/nuestravision.jpg" alt="Equipo" class="relative rounded-2xl shadow-xl w-full" />
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 space-y-8">
+                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 mt-2 flex-shrink-0"></div>
+                                    <div>
+                                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Nuestra Misión</h2>
+                                        <p class="text-gray-500 dark:text-gray-400 leading-relaxed">Democratizar el acceso al mercado inmobiliario, eliminando las barreras burocráticas y haciendo que el proceso de alquiler o compra sea tan sencillo como pedir un café.</p>
+                                    </div>
                                 </div>
-                                <h3 class="stat-title">Rapidez</h3>
-                                <p class="stat-desc">Nuestro buscador inteligente te ahorra horas de navegación, mostrándote solo lo que te importa.</p>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 mt-2 flex-shrink-0"></div>
+                                    <div>
+                                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Nuestra Visión</h2>
+                                        <p class="text-gray-500 dark:text-gray-400 leading-relaxed">Ser el estándar global de transparencia en el sector inmobiliario, donde cada clic signifique una nueva oportunidad para empezar una vida mejor.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <!-- Mission/Vision -->
-                <section class="py-20 bg-white dark:bg-surface-800">
-                    <div class="px-6 lg:px-20">
-                        <div class="flex flex-col md:flex-row items-center gap-16">
-                            <div class="w-full md:w-1/2">
-                                <div class="image-ring">
-                                    <img src="/demo/images/galleria/galleria10.jpg" alt="Equipo" class="rounded-3xl shadow-2xl w-full" />
-                                </div>
-                            </div>
-                            <div class="w-full md:w-1/2 space-y-10">
-                                <div class="mission-card">
-                                    <div class="mission-dot" style="background: linear-gradient(135deg, #D4E157, #A3C92A);"></div>
-                                    <div>
-                                        <h2 class="text-3xl font-black text-[#1A262F] dark:text-white mb-4">Nuestra Misión</h2>
-                                        <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                                            Democratizar el acceso al mercado inmobiliario, eliminando las barreras burocráticas y haciendo que el proceso de alquiler o compra sea tan sencillo como pedir un café.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="mission-card">
-                                    <div class="mission-dot" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
-                                    <div>
-                                        <h2 class="text-3xl font-black text-[#1A262F] dark:text-white mb-4">Nuestra Visión</h2>
-                                        <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                                            Ser el estándar global de transparencia en el sector inmobiliario, donde cada clic signifique una nueva oportunidad para empezar una vida mejor.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <footer-widget class="mt-auto" />
+            <footer-widget />
         </div>
-    `,
-    styles: [
-        `
-            .nosotros-hero {
-                position: relative;
-                background: linear-gradient(135deg, #d4e157 0%, #a3c92a 50%, #84b01e 100%);
-                padding: 5rem 0;
-                overflow: hidden;
-
-                .hero-glow {
-                    position: absolute;
-                    top: -30%;
-                    right: -10%;
-                    width: 60%;
-                    height: 100%;
-                    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-                    filter: blur(100px);
-                    pointer-events: none;
-                }
-
-                .hero-title {
-                    font-size: 3.5rem;
-                    font-weight: 900;
-                    color: #1a262f;
-                    margin-bottom: 1.5rem;
-                    line-height: 1.1;
-                }
-
-                .hero-subtitle {
-                    font-size: 1.25rem;
-                    color: rgba(26, 38, 47, 0.75);
-                    max-width: 48rem;
-                    margin: 0 auto;
-                    line-height: 1.7;
-                    font-weight: 500;
-                }
-            }
-
-            .stat-card {
-                background: #fff;
-                border-radius: 20px;
-                padding: 2.5rem 2rem;
-                text-align: center;
-                box-shadow:
-                    0 1px 3px rgba(0, 0, 0, 0.04),
-                    0 4px 16px rgba(0, 0, 0, 0.04);
-                border: 1px solid rgba(0, 0, 0, 0.04);
-                transition: all 0.3s ease;
-
-                &:hover {
-                    transform: translateY(-4px);
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-                }
-
-                .stat-icon {
-                    width: 64px;
-                    height: 64px;
-                    border-radius: 16px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 1.5rem;
-                }
-
-                .stat-title {
-                    font-size: 1.5rem;
-                    font-weight: 800;
-                    color: #1a262f;
-                    margin-bottom: 0.75rem;
-                }
-
-                .stat-desc {
-                    color: #64748b;
-                    line-height: 1.6;
-                    font-size: 0.95rem;
-                }
-            }
-
-            .image-ring {
-                border-radius: 24px;
-                padding: 6px;
-                background: linear-gradient(135deg, #d4e157, #a3c92a);
-                box-shadow: 0 8px 32px rgba(163, 201, 42, 0.2);
-
-                img {
-                    border-radius: 20px;
-                }
-            }
-
-            .mission-card {
-                display: flex;
-                gap: 1.25rem;
-                padding: 1.5rem;
-                background: #f8fafc;
-                border-radius: 16px;
-                border: 1px solid rgba(0, 0, 0, 0.04);
-                transition: all 0.3s ease;
-
-                &:hover {
-                    background: #fff;
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-                }
-
-                .mission-dot {
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                    margin-top: 0.5rem;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .nosotros-hero .hero-title {
-                    font-size: 2.2rem;
-                }
-            }
-
-            :host-context(.dark) {
-                .stat-card {
-                    background: #1e293b;
-                    border-color: rgba(255, 255, 255, 0.05);
-                    .stat-title {
-                        color: #f1f5f9;
-                    }
-                }
-                .mission-card {
-                    background: #1e293b;
-                    border-color: rgba(255, 255, 255, 0.05);
-                    &:hover {
-                        background: #334155;
-                    }
-                }
-            }
-        `
-    ]
+    `
 })
 export class Nosotros {}

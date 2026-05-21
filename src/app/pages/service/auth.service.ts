@@ -10,7 +10,7 @@ import { tap } from 'rxjs';
 })
 export class Auth {
 
-  private readonly baseUrl = 'http://localhost:8080/tupisoya';
+  private readonly baseUrl = '/tupisoya';
 
   private readonly tokenKey = 'authToken';
   private readonly userKey = 'authUser';

@@ -3,52 +3,89 @@ import { Router, RouterModule } from '@angular/router';
 
 @Component({
     selector: 'footer-widget',
+    standalone: true,
     imports: [RouterModule],
     template: `
-        <div class="py-12 px-12 mx-0 mt-20 lg:mx-20">
-            <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12 md:col-span-2">
-                    <a (click)="router.navigate(['/landing'])" class="flex flex-wrap items-center justify-center md:justify-start md:mb-0 mb-6 cursor-pointer">
-                        <img src="/demo/images/galleria/logo.png" alt="TuPisoYa Logo" class="h-20">
-                    </a>
+        <footer class="bg-gray-900 dark:bg-gray-950 text-gray-300">
+            <div class="max-w-[90rem] mx-auto px-8 lg:px-24 py-16">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                    <!-- Brand -->
+                    <div class="lg:col-span-1">
+                        <a class="flex items-center gap-3 cursor-pointer mb-4" (click)="router.navigate(['/landing'])">
+                            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                                <i class="pi pi-home text-white text-sm"></i>
+                            </div>
+                            <span class="text-lg font-bold text-white">TuPisoYa</span>
+                        </a>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">
+                            La plataforma inteligente que transforma la forma de encontrar tu hogar ideal en Zaragoza.
+                        </p>
+                        <div class="flex gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                                <i class="pi pi-facebook text-sm text-gray-400"></i>
+                            </div>
+                            <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                                <i class="pi pi-twitter text-sm text-gray-400"></i>
+                            </div>
+                            <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                                <i class="pi pi-instagram text-sm text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div>
+                        <h4 class="text-white font-semibold mb-5 text-sm uppercase tracking-wider">Navegación</h4>
+                        <ul class="space-y-3">
+                            <li><a (click)="router.navigate(['/comprar'])" class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Comprar</a></li>
+                            <li><a (click)="router.navigate(['/alquilar'])" class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Alquilar</a></li>
+                            <li><a (click)="router.navigate(['/servicios'])" class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Servicios</a></li>
+                            <li><a (click)="router.navigate(['/nosotros'])" class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Nosotros</a></li>
+                            <li><a (click)="router.navigate(['/contacto'])" class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Contacto</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Services -->
+                    <div>
+                        <h4 class="text-white font-semibold mb-5 text-sm uppercase tracking-wider">Servicios</h4>
+                        <ul class="space-y-3">
+                            <li><span class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Tasación Gratuita</span></li>
+                            <li><span class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Asesoría Legal</span></li>
+                            <li><span class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Gestión de Alquiler</span></li>
+                            <li><span class="text-sm text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer">Oportunidades Inversión</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact -->
+                    <div>
+                        <h4 class="text-white font-semibold mb-5 text-sm uppercase tracking-wider">Contacto</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-sm text-gray-400">
+                                <i class="pi pi-phone text-emerald-400"></i>
+                                +34 900 123 456
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-gray-400">
+                                <i class="pi pi-envelope text-emerald-400"></i>
+                                info@tupisoya.com
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-gray-400">
+                                <i class="pi pi-map-marker text-emerald-400"></i>
+                                Zaragoza, España
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="col-span-12 md:col-span-10">
-                    <div class="grid grid-cols-12 gap-8 text-center md:text-left">
-                        <div class="col-span-12 md:col-span-3">
-                            <h4 class="font-medium text-2xl leading-normal mb-6 text-surface-900 dark:text-surface-0">Empresa</h4>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Sobre Nosotros</a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Noticias</a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Inversores</a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Empleo</a>
-                            <a class="leading-normal text-xl block cursor-pointer text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Kit de Prensa</a>
-                        </div>
-
-                        <div class="col-span-12 md:col-span-3">
-                            <h4 class="font-medium text-2xl leading-normal mb-6 text-surface-900 dark:text-surface-0">Recursos</h4>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Empezar</a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Aprender</a>
-                            <a class="leading-normal text-xl block cursor-pointer text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Casos de Estudio</a>
-                        </div>
-
-                        <div class="col-span-12 md:col-span-3">
-                            <h4 class="font-medium text-2xl leading-normal mb-6 text-surface-900 dark:text-surface-0">Comunidad</h4>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Discord</a>
-                            <a class="leading-normal text-xl flex items-center justify-center md:justify-start cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Eventos<img src="https://primefaces.org/cdn/templates/sakai/landing/new-badge.svg" alt="badge" class="ml-2" /></a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Preguntas Frecuentes</a>
-                            <a class="leading-normal text-xl block cursor-pointer text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Blog</a>
-                        </div>
-
-                        <div class="col-span-12 md:col-span-3">
-                            <h4 class="font-medium text-2xl leading-normal mb-6 text-surface-900 dark:text-surface-0">Legal</h4>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Política de Marca</a>
-                            <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Política de Privacidad</a>
-                            <a class="leading-normal text-xl block cursor-pointer text-surface-700 dark:text-surface-100 hover:text-primary-500 transition-colors">Términos de Servicio</a>
-                        </div>
+                <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-gray-500">&copy; 2026 TuPisoYa. Todos los derechos reservados.</p>
+                    <div class="flex gap-6">
+                        <span class="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">Privacidad</span>
+                        <span class="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">Términos</span>
+                        <span class="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">Cookies</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </footer>
     `
 })
 export class FooterWidget {

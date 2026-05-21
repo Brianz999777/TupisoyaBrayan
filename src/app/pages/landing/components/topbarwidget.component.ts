@@ -1,14 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Input } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
-import {AppFloatingConfigurator} from "@/app/layout/component/app.floatingconfigurator";
-import { Auth } from '../../service/auth.service';
-import { UserDTO } from '../../interfaces/user-dto';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
+import { Auth } from '../../service/auth.service';
+import { UserDTO } from '../../interfaces/user-dto';
 
 @Component({
     selector: 'topbar-widget',
@@ -20,102 +19,109 @@ import { TooltipModule } from 'primeng/tooltip';
         ButtonModule,
         RippleModule,
         AvatarModule,
-        TooltipModule,
-        AppFloatingConfigurator
+        TooltipModule
     ],
     template: `
-        <a class="flex items-center cursor-pointer" (click)="router.navigate(['/landing'])">
-            <img src="/demo/images/galleria/logo.png" alt="TuPisoYa Logo" class="h-16 md:h-24 mr-20">
-        </a>
+        <nav [ngClass]="(isHero && !isScrolled) ? 'bg-transparent border-transparent py-[1.1rem]' : 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-800/50 py-3.5'"
+             class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-16 transition-all duration-300">
+            <div class="max-w-[117rem] mx-auto flex items-center justify-between">
+                <!-- Logo -->
+                <a class="flex items-center gap-3 cursor-pointer group" (click)="goToLanding()">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50 group-hover:scale-105 transition-transform">
+                        <i class="pi pi-home text-white text-xl"></i>
+                    </div>
+                    <span [ngClass]="(isHero && !isScrolled) ? 'text-white' : 'text-gray-900 dark:text-white'"
+                          class="text-2xl font-black tracking-tight transition-colors duration-300">
+                        TuPisoYa
+                    </span>
+                </a>
 
-        <a pButton [text]="true" severity="secondary" [rounded]="true" pRipple class="lg:hidden!" pStyleClass="@next" enterFromClass="hidden" leaveToClass="hidden" [hideOnOutsideClick]="true">
-            <i class="pi pi-bars text-2xl!"></i>
-        </a>
+                <!-- Desktop Nav -->
+                <div class="hidden lg:flex items-center gap-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-full px-3 py-2 border-2 border-emerald-500/20 dark:border-emerald-500/35 shadow-lg shadow-emerald-500/5">
+                    <a (click)="goToLanding()" class="px-6 py-3 rounded-full text-base font-bold text-gray-800 dark:text-gray-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer">
+                        Inicio
+                    </a>
+                    <a (click)="router.navigate(['/comprar'])" class="px-6 py-3 rounded-full text-base font-bold text-gray-800 dark:text-gray-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer">
+                        Comprar
+                    </a>
+                    <a (click)="router.navigate(['/alquilar'])" class="px-6 py-3 rounded-full text-base font-bold text-gray-800 dark:text-gray-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer">
+                        Alquilar
+                    </a>
+                    <a (click)="router.navigate(['/nosotros'])" class="px-6 py-3 rounded-full text-base font-bold text-gray-800 dark:text-gray-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer">
+                        Nosotros
+                    </a>
+                    <a (click)="router.navigate(['/contacto'])" class="px-6 py-3 rounded-full text-base font-bold text-gray-800 dark:text-gray-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer">
+                        Contacto
+                    </a>
+                </div>
 
-        <div class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
-            <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
-                <li>
-                    <a (click)="router.navigate(['/landing'])" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl hover:text-primary-500 transition-colors">
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li>
-                    <a (click)="router.navigate(['/nosotros'])" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl hover:text-primary-500 transition-colors">
-                        <span>Nosotros</span>
-                    </a>
-                </li>
-                <li>
-                    <a (click)="router.navigate(['/servicios'])" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl hover:text-primary-500 transition-colors">
-                        <span>Servicios</span>
-                    </a>
-                </li>
-                <li>
-                    <a (click)="router.navigate(['/contacto'])" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl hover:text-primary-500 transition-colors">
-                        <span>Contacto</span>
-                    </a>
-                </li>
-                @if (isLoggedIn) {
-                    <li>
-                        <a (click)="router.navigate(['/publicaciones'])" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl hover:text-primary-500 transition-colors">
-                            <span>Publicaciones</span>
-                        </a>
-                    </li>
-                }
-            </ul>
-            <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2 items-center">
-                <!-- Si está logueado: mostrar avatar + nombre -->
-                @if (isLoggedIn) {
-                    <button pButton
-                        pRipple
-                        [rounded]="true"
-                        [text]="true"
-                        class="user-profile-btn"
-                        (click)="router.navigate(['/publicaciones'])"
-                        pTooltip="Mis publicaciones"
-                        tooltipPosition="bottom">
-                        <i class="pi pi-list text-xl"></i>
-                    </button>
-                    <button pButton
-                        pRipple
-                        [rounded]="true"
-                        [text]="true"
-                        class="user-profile-btn"
-                        (click)="router.navigate(['/perfil'])"
-                        pTooltip="Ir a mi perfil"
-                        tooltipPosition="bottom">
-                        <div class="flex items-center gap-3">
-                            <p-avatar
-                                [label]="getInitials()"
-                                size="normal"
-                                shape="circle"
-                                styleClass="topbar-avatar"
-                                [style]="{ 'background': 'linear-gradient(135deg, #D4E157, #A3C92A)', 'color': '#1A262F', 'font-weight': '800', 'width': '36px', 'height': '36px', 'font-size': '0.85rem' }"
-                            ></p-avatar>
-                            <span class="font-bold text-surface-900 dark:text-surface-0 hidden md:inline">{{ getFullName() }}</span>
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+                    @if (isLoggedIn) {
+                        <div (click)="router.navigate(['/perfil'])"
+                            [ngClass]="(isHero && !isScrolled) ? 'bg-white/10 hover:bg-white/20 border-white/20' : 'bg-gray-100/70 hover:bg-gray-200/70 dark:bg-gray-800/70 dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700'"
+                            class="flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full border shadow-sm transition-all duration-300 cursor-pointer group">
+                            <span [ngClass]="(isHero && !isScrolled) ? 'text-white' : 'text-gray-700 dark:text-gray-200'"
+                                  class="text-sm font-semibold tracking-wide">
+                                {{ user?.apellidos_dto || user?.email_dto || 'Usuario' }}
+                            </span>
+                            <p-avatar [label]="getInitials()" size="normal" shape="circle"
+                                [style]="{ 'background': 'linear-gradient(135deg, #34d399, #14b8a6)', 'color': '#fff', 'font-weight': '700', 'width': '32px', 'height': '32px', 'font-size': '0.8rem' }">
+                            </p-avatar>
                         </div>
+                    } @else {
+                        <button pButton pRipple label="Entrar" routerLink="/login" [rounded]="true" [text]="true"
+                            [ngClass]="(isHero && !isScrolled) ? '!text-white hover:!bg-white/10' : '!text-gray-700 dark:!text-gray-200 hover:!bg-gray-100 dark:hover:!bg-gray-800'"
+                            class="!text-sm !font-semibold transition-all duration-300"></button>
+                        <button pButton pRipple label="Registrarse" routerLink="/register" [rounded]="true"
+                            class="!text-sm !font-semibold !bg-gradient-to-r !from-emerald-500 !to-teal-500 !border-0 !text-white !shadow-lg !shadow-emerald-500/20 !px-5 hover:scale-[1.03] transition-transform duration-300"></button>
+                    }
+                    <!-- Mobile menu -->
+                    <button pButton [rounded]="true" [text]="true" class="lg:!hidden !w-10 !h-10 !rounded-xl"
+                        [ngClass]="(isHero && !isScrolled) ? '!text-white hover:!bg-white/10' : '!text-gray-700 dark:!text-gray-200 hover:!bg-gray-100 dark:hover:!bg-gray-800'"
+                        pStyleClass="@next" enterFromClass="hidden" leaveToClass="hidden" [hideOnOutsideClick]="true">
+                        <i class="pi pi-bars text-lg"></i>
                     </button>
-                } @else {
-                    <button pButton pRipple label="Iniciar Sesión" routerLink="/login" [rounded]="true" [text]="true"></button>
-                    <button pButton pRipple label="Registrarse" routerLink="/register" [rounded]="true"></button>
-                }
-                <app-floating-configurator [float]="false"/>
+                </div>
             </div>
-        </div>
-    `,
-    
+
+            <!-- Mobile Menu -->
+            <div class="hidden lg:hidden mt-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-3 shadow-xl border border-gray-100 dark:border-gray-700">
+                <div class="flex flex-col gap-1">
+                    <a (click)="goToLanding()" class="px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all cursor-pointer">Inicio</a>
+                    <a (click)="router.navigate(['/comprar'])" class="px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all cursor-pointer">Comprar</a>
+                    <a (click)="router.navigate(['/alquilar'])" class="px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all cursor-pointer">Alquilar</a>
+                    <a (click)="router.navigate(['/nosotros'])" class="px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all cursor-pointer">Nosotros</a>
+                    <a (click)="router.navigate(['/contacto'])" class="px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all cursor-pointer">Contacto</a>
+                </div>
+            </div>
+        </nav>
+    `
 })
 export class TopbarWidget implements OnInit {
+    @Input() isHero = true;
+
     isLoggedIn = false;
     user: UserDTO | null = null;
+    isScrolled = false;
 
     constructor(
         public router: Router,
         private authService: Auth
     ) {}
 
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        this.isScrolled = window.scrollY > 20;
+    }
+
     ngOnInit() {
         this.isLoggedIn = this.authService.isLoggedIn();
         this.user = this.authService.getUser();
+    }
+
+    goToLanding() {
+        this.router.navigate(['/landing'], { queryParams: {} });
     }
 
     getInitials(): string {
@@ -123,14 +129,5 @@ export class TopbarWidget implements OnInit {
         const nombre = this.user.nombre_representante_juri || '';
         const apellido = this.user.apellidos_dto || '';
         return (nombre.charAt(0) + apellido.charAt(0)).toUpperCase() || '?';
-    }
-
-    getFullName(): string {
-        if (!this.user) return 'Usuario';
-        if (this.user.type === 'juridica') {
-            return this.user.nombre_representante_juri || 'Usuario';
-        }
-        const partes = [this.user.nombre_representante_juri ];
-        return partes.filter(p => p && p !== 'N/A').join(' ') || 'Usuario';
     }
 }

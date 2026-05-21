@@ -29,34 +29,32 @@ import { finalize } from 'rxjs';
   ],
   providers: [MessageService],
   template: `
-    <div class="login-page">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 relative overflow-hidden p-4">
       <!-- Background decoration -->
-      <div class="login-bg">
-        <div class="bg-circle bg-circle-1"></div>
-        <div class="bg-circle bg-circle-2"></div>
-        <div class="bg-circle bg-circle-3"></div>
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute w-[500px] h-[500px] bg-emerald-200/20 dark:bg-emerald-500/5 rounded-full blur-3xl -top-32 -right-32"></div>
+        <div class="absolute w-[400px] h-[400px] bg-teal-200/20 dark:bg-teal-500/5 rounded-full blur-3xl -bottom-32 -left-32"></div>
       </div>
 
-      <div class="login-container">
-        <div class="login-card">
+      <div class="relative z-10 w-full max-w-[420px]">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-xl shadow-emerald-500/5 border border-gray-100 dark:border-gray-700">
           <!-- Logo -->
-          <div class="login-logo">
-            <div class="logo-icon">
-              <i class="pi pi-home"></i>
+          <div class="flex items-center justify-center gap-3 mb-8">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <i class="pi pi-home text-xl text-white"></i>
             </div>
-            <h1 class="logo-text">TuPisoYa</h1>
+            <span class="text-2xl font-black text-gray-900 dark:text-white">TuPisoYa</span>
           </div>
 
-          <div class="login-header">
-            <h2 class="login-title">Bienvenido de nuevo</h2>
-            <p class="login-subtitle">Inicia sesión para continuar</p>
+          <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Bienvenido de nuevo</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Inicia sesión para continuar</p>
           </div>
 
-          <form [formGroup]="formLogin" (submit)="login()" class="login-form">
+          <form [formGroup]="formLogin" (submit)="login()" class="space-y-5">
             <!-- Email -->
-            <div class="field">
-              <label for="email" class="field-label">
-                <i class="pi pi-envelope"></i>
+            <div class="flex flex-col gap-1.5">
+              <label for="email" class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Correo electrónico
               </label>
               <input
@@ -64,22 +62,21 @@ import { finalize } from 'rxjs';
                 id="email"
                 type="email"
                 placeholder="tu@email.com"
-                class="field-input"
+                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-900 dark:text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-gray-700 placeholder:text-gray-400"
                 formControlName="email"
-                [ngClass]="{ 'field-error': formLogin.get('email')?.invalid && (formLogin.get('email')?.dirty || formLogin.get('email')?.touched) }"
+                [ngClass]="{ '!border-red-400 !bg-red-50 dark:!bg-red-900/20': formLogin.get('email')?.invalid && (formLogin.get('email')?.dirty || formLogin.get('email')?.touched) }"
               />
               @if (formLogin.get('email')?.invalid && (formLogin.get('email')?.dirty || formLogin.get('email')?.touched)) {
-                <div class="field-msg error">
-                  @if (formLogin.get('email')?.errors?.['required']) { <span><i class="pi pi-exclamation-circle"></i> El correo es obligatorio</span> }
-                  @if (formLogin.get('email')?.errors?.['email']) { <span><i class="pi pi-exclamation-circle"></i> Formato de correo no válido</span> }
+                <div class="flex items-center gap-1 text-xs font-semibold text-red-500">
+                  @if (formLogin.get('email')?.errors?.['required']) { <span><i class="pi pi-exclamation-circle text-[10px]"></i> El correo es obligatorio</span> }
+                  @if (formLogin.get('email')?.errors?.['email']) { <span><i class="pi pi-exclamation-circle text-[10px]"></i> Formato de correo no válido</span> }
                 </div>
               }
             </div>
 
             <!-- Password -->
-            <div class="field">
-              <label for="password" class="field-label">
-                <i class="pi pi-lock"></i>
+            <div class="flex flex-col gap-1.5">
+              <label for="password" class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Contraseña
               </label>
               <p-password
@@ -93,26 +90,26 @@ import { finalize } from 'rxjs';
                 [ngClass]="{ 'field-error': formLogin.get('password')?.invalid && (formLogin.get('password')?.dirty || formLogin.get('password')?.touched) }"
               ></p-password>
               @if (formLogin.get('password')?.invalid && (formLogin.get('password')?.dirty || formLogin.get('password')?.touched)) {
-                <div class="field-msg error">
-                  @if (formLogin.get('password')?.errors?.['required']) { <span><i class="pi pi-exclamation-circle"></i> La contraseña es obligatoria</span> }
-                  @if (formLogin.get('password')?.errors?.['minlength']) { <span><i class="pi pi-exclamation-circle"></i> Mínimo 8 caracteres</span> }
+                <div class="flex items-center gap-1 text-xs font-semibold text-red-500">
+                  @if (formLogin.get('password')?.errors?.['required']) { <span><i class="pi pi-exclamation-circle text-[10px]"></i> La contraseña es obligatoria</span> }
+                  @if (formLogin.get('password')?.errors?.['minlength']) { <span><i class="pi pi-exclamation-circle text-[10px]"></i> Mínimo 8 caracteres</span> }
                 </div>
               }
             </div>
 
             <!-- Remember + Forgot -->
-            <div class="login-options">
-              <div class="remember-row">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
                 <p-checkbox formControlName="checked" id="rememberme" binary></p-checkbox>
-                <label for="rememberme" class="remember-label">Recordarme</label>
+                <label for="rememberme" class="text-sm font-medium text-gray-600 dark:text-gray-400 cursor-pointer">Recordarme</label>
               </div>
-              <span class="forgot-link">¿Olvidaste tu contraseña?</span>
+              <span class="text-sm font-semibold text-emerald-500 hover:text-emerald-600 cursor-pointer transition-colors">¿Olvidaste tu contraseña?</span>
             </div>
 
             <!-- Error message from backend -->
             @if (errorMsg) {
-              <div class="login-error">
-                <i class="pi pi-exclamation-triangle"></i>
+              <div class="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400">
+                <i class="pi pi-exclamation-triangle text-sm flex-shrink-0"></i>
                 <span>{{ errorMsg }}</span>
               </div>
             }
@@ -122,16 +119,16 @@ import { finalize } from 'rxjs';
               [label]="submitting ? 'Iniciando sesión...' : 'Iniciar sesión'"
               icon="pi pi-arrow-right"
               iconPos="right"
-              class="login-btn"
+              class="!w-full !py-3.5 !bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-semibold !rounded-xl !border-0 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25"
               type="submit"
               [disabled]="submitting"
               [loading]="submitting">
             </button>
 
             <!-- Register link -->
-            <div class="login-footer">
-              <span class="footer-text">¿No tienes cuenta?</span>
-              <a routerLink="/register" class="footer-link">Crear cuenta</a>
+            <div class="text-center flex items-center justify-center gap-1.5 pt-2">
+              <span class="text-sm text-gray-500 dark:text-gray-400">¿No tienes cuenta?</span>
+              <a routerLink="/register" class="text-sm font-bold text-emerald-500 hover:text-emerald-600 transition-colors">Crear cuenta</a>
             </div>
           </form>
         </div>
@@ -141,335 +138,50 @@ import { finalize } from 'rxjs';
     <p-toast position="top-center"></p-toast>
   `,
   styles: [`
-    /* ============================================
-       LOGIN PAGE - Estilo moderno
-       ============================================ */
-
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f8fafc;
-      position: relative;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    /* --- Background decoration --- */
-    .login-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .bg-circle {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-    }
-
-    .bg-circle-1 {
-      width: 600px;
-      height: 600px;
-      background: #D4E157;
-      top: -200px;
-      right: -100px;
-    }
-
-    .bg-circle-2 {
-      width: 400px;
-      height: 400px;
-      background: #A3C92A;
-      bottom: -100px;
-      left: -100px;
-    }
-
-    .bg-circle-3 {
-      width: 300px;
-      height: 300px;
-      background: #84B01E;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    /* --- Container --- */
-    .login-container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 440px;
-      padding: 1.5rem;
-    }
-
-    /* --- Card --- */
-    .login-card {
-      background: #fff;
-      border-radius: 24px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.04);
-    }
-
-    /* --- Logo --- */
-    .login-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, #D4E157, #A3C92A);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(163,201,42,0.3);
-
-      i {
-        font-size: 1.5rem;
-        color: #1A262F;
-      }
-    }
-
-    .logo-text {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #1A262F;
-      margin: 0;
-    }
-
-    /* --- Header --- */
-    .login-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .login-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #1A262F;
-      margin: 0 0 0.4rem;
-    }
-
-    .login-subtitle {
-      font-size: 0.95rem;
-      color: #94a3b8;
-      margin: 0;
-      font-weight: 500;
-    }
-
-    /* --- Form --- */
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .field-label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-
-      i {
-        font-size: 0.8rem;
-        color: #94a3b8;
-      }
-    }
-
-    .field-input {
+    :host ::ng-deep .p-password input {
       width: 100% !important;
       padding: 0.75rem 1rem !important;
       border: 2px solid #e2e8f0 !important;
-      border-radius: 12px !important;
-      font-size: 0.95rem !important;
-      transition: all 0.2s ease !important;
+      border-radius: 0.75rem !important;
+      font-size: 0.9rem !important;
+      font-weight: 500 !important;
       background: #f8fafc !important;
-
-      &:focus {
-        border-color: #A3C92A !important;
-        box-shadow: 0 0 0 3px rgba(163,201,42,0.15) !important;
-        background: #fff !important;
-      }
-
-      &.field-error {
-        border-color: #ef4444 !important;
-        background: #fef2f2 !important;
-      }
+      color: #111827 !important;
+      outline: none !important;
+      transition: all 0.2s ease !important;
     }
-
-    .field-msg {
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-
-      i { font-size: 0.75rem; }
-
-      &.error {
-        color: #ef4444;
-      }
+    :host ::ng-deep .p-password input:focus {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+      background: #fff !important;
     }
-
-    /* --- Options row --- */
-    .login-options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    :host-context(.dark) :host ::ng-deep .p-password input {
+      background: rgba(55, 65, 81, 0.5) !important;
+      border-color: #4b5563 !important;
+      color: #f3f4f6 !important;
     }
-
-    .remember-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    :host-context(.dark) :host ::ng-deep .p-password input:focus {
+      border-color: #10b981 !important;
+      background: #374151 !important;
     }
-
-    .remember-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #475569;
-      cursor: pointer;
+    :host ::ng-deep .p-password .p-password-toggle-icon {
+      color: #9ca3af !important;
     }
-
-    .forgot-link {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #A3C92A;
-      cursor: pointer;
-      transition: color 0.2s;
-
-      &:hover {
-        color: #84B01E;
-        text-decoration: underline;
-      }
-    }
-
-    /* --- Error message --- */
-    .login-error {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.85rem 1rem;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 12px;
-      color: #dc2626;
-      font-size: 0.85rem;
-      font-weight: 600;
-
-      i {
-        font-size: 1rem;
-        flex-shrink: 0;
-      }
-    }
-
-    /* --- Submit button --- */
-    .login-btn {
+    :host ::ng-deep .p-password.p-fluid .p-password-input {
       width: 100% !important;
-      padding: 0.85rem !important;
-      background: linear-gradient(135deg, #D4E157, #A3C92A) !important;
-      border: none !important;
-      color: #1A262F !important;
-      font-weight: 800 !important;
-      font-size: 1.05rem !important;
-      border-radius: 14px !important;
-      box-shadow: 0 4px 16px rgba(163,201,42,0.3) !important;
-      transition: all 0.3s ease !important;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 24px rgba(163,201,42,0.4) !important;
-      }
-
-      &:active:not(:disabled) {
-        transform: translateY(0) !important;
-      }
-
-      &:disabled {
-        opacity: 0.6 !important;
-      }
     }
-
-    /* --- Footer --- */
-    .login-footer {
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
+    :host ::ng-deep .p-checkbox .p-checkbox-box {
+      border-radius: 6px !important;
+      border: 2px solid #d1d5db !important;
+      width: 18px !important;
+      height: 18px !important;
     }
-
-    .footer-text {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      font-weight: 500;
+    :host ::ng-deep .p-checkbox.p-highlight .p-checkbox-box {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
     }
-
-    .footer-link {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #A3C92A;
-      text-decoration: none;
-      transition: color 0.2s;
-
-      &:hover {
-        color: #84B01E;
-        text-decoration: underline;
-      }
-    }
-
-    /* --- Dark mode --- */
-    :host-context(.dark) {
-      .login-page {
-        background: #0f172a;
-      }
-
-      .login-card {
-        background: #1e293b;
-        border-color: rgba(255,255,255,0.05);
-      }
-
-      .login-title { color: #f1f5f9; }
-
-      .field-label {
-        color: #e2e8f0;
-        i { color: #64748b; }
-      }
-
-      .field-input {
-        background: #0f172a !important;
-        border-color: #334155 !important;
-        color: #f1f5f9 !important;
-
-        &:focus {
-          border-color: #A3C92A !important;
-          background: #1e293b !important;
-        }
-
-        &.field-error {
-          border-color: #ef4444 !important;
-          background: rgba(239,68,68,0.1) !important;
-        }
-      }
-
-      .remember-label { color: #94a3b8; }
-      .footer-text { color: #64748b; }
+    :host-context(.dark) :host ::ng-deep .p-checkbox .p-checkbox-box {
+      border-color: #6b7280 !important;
     }
   `]
 })

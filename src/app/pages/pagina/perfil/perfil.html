@@ -1,411 +1,359 @@
-<div class="bg-surface-0 dark:bg-surface-900 min-h-screen flex flex-col">
-    <div class="overflow-hidden flex flex-col flex-1">
-        <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
+<div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+    <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
 
-        <!-- ===== HERO PERFIL ===== -->
-        <section class="perfil-hero">
-            <div class="hero-bg-pattern"></div>
-            <div class="px-6 lg:px-20 relative z-10">
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                    <!-- Avatar -->
-                    <div class="avatar-wrapper">
-                        <div class="avatar-ring">
-                            <p-avatar
-                                [label]="getInitials()"
-                                size="xlarge"
-                                shape="circle"
-                                styleClass="profile-avatar"
-                                [style]="{ 'background': 'linear-gradient(135deg, #D4E157, #A3C92A)', 'color': '#1A262F', 'font-size': '2.5rem', 'font-weight': '900', 'width': '120px', 'height': '120px' }"
-                            ></p-avatar>
-                        </div>
-                        <div class="avatar-role-badge">
-                            <i [class]="getRoleIcon()"></i>
-                            <span>{{ getRole() }}</span>
-                        </div>
+    <!-- ===== HERO PERFIL ===== -->
+    <section class="relative pt-32 pb-20 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900"></div>
+        <div class="absolute top-1/3 -left-32 w-96 h-96 bg-emerald-200/20 dark:bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div class="relative z-10 max-w-[120rem] mx-auto px-8 lg:px-32">
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                <!-- Avatar -->
+                <div class="relative flex-shrink-0">
+                    <div class="rounded-full p-1 bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25">
+                        <p-avatar
+                            [label]="getInitials()"
+                            size="xlarge"
+                            shape="circle"
+                            styleClass="profile-avatar"
+                            [style]="{ 'background': '#fff', 'color': '#10b981', 'font-size': '2.5rem', 'font-weight': '900', 'width': '120px', 'height': '120px' }"
+                        ></p-avatar>
                     </div>
-
-                    <!-- Info -->
-                    <div class="hero-info text-center md:text-left">
-                        <h1 class="hero-name">{{ getFullName() }}</h1>
-                        <p class="hero-email">{{ getEmail() }}</p>
-                        <div class="hero-meta">
-                            <span class="meta-chip">
-                                <i class="pi pi-id-card"></i>
-                                {{ getDocumentType() }}: {{ getDocument() }}
-                            </span>
-                            <span class="meta-chip">
-                                <i [class]="getRoleIcon()"></i>
-                                {{ getRole() }}
-                            </span>
-                            <span class="meta-chip">
-                                <i class="pi pi-building"></i>
-                                {{ getPersonType() }}
-                            </span>
-                        </div>
-                    </div>
-
-
-                    <!-- Actions -->
-                    <div class="hero-actions ml-auto">
-                        <button pButton
-                            label="Cerrar sesión"
-                            icon="pi pi-sign-out"
-                            class="logout-btn"
-                            (click)="logout()"
-                            pTooltip="Cerrar sesión"
-                            tooltipPosition="bottom">
-                        </button>
+                    <div
+                        class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-emerald-400 dark:text-emerald-600 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg border-2 border-white dark:border-gray-800"
+                    >
+                        <i [class]="getRoleIcon()" class="mr-1"></i>
+                        {{ getRole() }}
                     </div>
                 </div>
+
+                <!-- Info -->
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ getFullName() }}</h1>
+                    <p class="text-base text-gray-500 dark:text-gray-400 mb-4">{{ getEmail() }}</p>
+                    <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                            <i class="pi pi-id-card text-[10px]"></i>
+                            {{ getDocumentType() }}: {{ getDocument() }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                            <i [class]="getRoleIcon()" class="text-[10px]"></i>
+                            {{ getRole() }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                            <i class="pi pi-building text-[10px]"></i>
+                            {{ getPersonType() }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-3">
+                    <button
+                        pButton
+                        label="Cerrar sesión"
+                        icon="pi pi-sign-out"
+                        class="!bg-gray-900 dark:!bg-white !text-white dark:!text-gray-900 !font-bold !rounded-full !border-0 hover:!bg-red-600 hover:!text-white !transition-all !shadow-md !px-5 !py-2.5"
+                        (click)="logout()"
+                        pTooltip="Cerrar sesión"
+                        tooltipPosition="bottom"
+                    ></button>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ===== CONTENIDO PRINCIPAL ===== -->
-        <section class="perfil-content py-16">
-            <div class="px-6 lg:px-20">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- COLUMNA IZQUIERDA (2/3) -->
-                    <div class="lg:col-span-2 space-y-8">
-
-                        <!-- Información Personal -->
-                        <div class="content-card">
-                            <div class="card-header">
-                                <div class="card-header-icon">
-                                    <i class="pi pi-user"></i>
-                                </div>
-                                <div>
-                                    <h3 class="card-title">Información Personal</h3>
-                                    <p class="card-subtitle">Tus datos registrados en TuPisoYa</p>
-                                </div>
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-[120rem] mx-auto px-8 lg:px-32">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- COLUMNA IZQUIERDA (2/3) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Información Personal -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-700">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                                <i class="pi pi-user text-white text-sm"></i>
                             </div>
-                            <div class="card-body">
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <span class="info-label">Nombre completo</span>
-                                        <span class="info-value">{{ getFullName() }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Correo electrónico</span>
-                                        <span class="info-value">{{ getEmail() }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Documento</span>
-                                        <span class="info-value">{{ getDocument() }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Rol</span>
-                                        <span class="info-value">
-                                            <span class="role-chip">
-                                                <i [class]="getRoleIcon()"></i>
-                                                {{ getRole() }}
-                                            </span>
-                                        </span>
-                                    </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Información Personal</h3>
+                                <p class="text-sm text-gray-400">Tus datos registrados en TuPisoYa</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nombre completo</span>
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">{{ getFullName() }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Correo electrónico</span>
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">{{ getEmail() }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Documento</span>
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">{{ getDocument() }}</span>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Rol</span>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 w-fit">
+                                        <i [class]="getRoleIcon()" class="text-[10px]"></i>
+                                        {{ getRole() }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Seguridad / Cambiar Contraseña -->
-                        <div class="content-card">
-                            <div class="card-header">
-                                <div class="card-header-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                                    <i class="pi pi-lock"></i>
-                                </div>
-                                <div>
-                                    <h3 class="card-title">Seguridad</h3>
-                                    <p class="card-subtitle">Gestiona tu contraseña y mantén tu cuenta segura</p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                @if (!showPasswordForm) {
-                                    <div class="security-info-box">
-                                        <div class="security-icon">
-                                            <i class="pi pi-shield"></i>
-                                        </div>
-                                        <div class="security-text">
-                                            <span class="font-bold text-gray-900 dark:text-white">Contraseña segura</span>
-                                            <span class="text-gray-500 dark:text-gray-400 text-sm">Mantén tu cuenta segura actualizando tu contraseña regularmente</span>
-                                        </div>
-                                        <button pButton
-                                            label="Cambiar contraseña"
-                                            icon="pi pi-key"
-                                            class="change-pw-btn"
-                                            (click)="togglePasswordForm()">
-                                        </button>
-                                    </div>
-                                } @else {
-                                    <form [formGroup]="changePasswordForm" (submit)="changePassword()" class="password-form">
-                                        @if (errorMsg) {
-                                            <div class="password-error">
-                                                <i class="pi pi-exclamation-triangle"></i>
-                                                <span>{{ errorMsg }}</span>
-                                            </div>
-                                        }
-
-                                        <div class="field">
-                                            <label for="currentPassword" class="field-label">Contraseña actual</label>
-                                            <p-password
-                                                id="currentPassword"
-                                                formControlName="currentPassword"
-                                                placeholder="Ingresa tu contraseña actual"
-                                                [toggleMask]="true"
-                                                [feedback]="false"
-                                                styleClass="w-full"
-                                                [fluid]="true"
-                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('currentPassword')?.invalid && (changePasswordForm.get('currentPassword')?.dirty || changePasswordForm.get('currentPassword')?.touched) }"
-                                            ></p-password>
-                                            @if (changePasswordForm.get('currentPassword')?.invalid && (changePasswordForm.get('currentPassword')?.dirty || changePasswordForm.get('currentPassword')?.touched)) {
-                                                <small class="text-red-500">
-                                                    @if (changePasswordForm.get('currentPassword')?.errors?.['required']) { La contraseña actual es obligatoria. }
-                                                    @if (changePasswordForm.get('currentPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. }
-                                                </small>
-                                            }
-                                        </div>
-
-                                        <div class="field">
-                                            <label for="newPassword" class="field-label">Nueva contraseña</label>
-                                            <p-password
-                                                id="newPassword"
-                                                formControlName="newPassword"
-                                                placeholder="Mín. 8 carac. y 1 especial (!@#$%^&*)"
-                                                [toggleMask]="true"
-                                                [feedback]="true"
-                                                styleClass="w-full"
-                                                [fluid]="true"
-                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched) }"
-                                            ></p-password>
-                                            @if (changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)) {
-                                                <small class="text-red-500">
-                                                    @if (changePasswordForm.get('newPassword')?.errors?.['required']) { La nueva contraseña es obligatoria. }
-                                                    @if (changePasswordForm.get('newPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. }
-                                                    @if (changePasswordForm.get('newPassword')?.errors?.['passwordPattern']) { Debe contener exactamente 1 carácter especial (!@#$%^&*). }
-                                                </small>
-                                            }
-                                        </div>
-
-                                        <div class="field">
-                                            <label for="confirmPassword" class="field-label">Confirmar nueva contraseña</label>
-                                            <p-password
-                                                id="confirmPassword"
-                                                formControlName="confirmPassword"
-                                                placeholder="Repite tu nueva contraseña"
-                                                [toggleMask]="true"
-                                                [feedback]="false"
-                                                styleClass="w-full"
-                                                [fluid]="true"
-                                                [ngClass]="{ 'ng-invalid ng-dirty': changePasswordForm.get('confirmPassword')?.invalid && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched) }"
-                                            ></p-password>
-                                            @if (changePasswordForm.get('confirmPassword')?.errors?.['required'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
-                                                <small class="text-red-500">Debes confirmar la nueva contraseña.</small>
-                                            }
-                                            @if (changePasswordForm.get('confirmPassword')?.errors?.['mismatch'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
-                                                <small class="text-red-500">Las contraseñas no coinciden.</small>
-                                            }
-                                        </div>
-
-                                        <div class="form-actions">
-                                            <button pButton
-                                                label="Cancelar"
-                                                icon="pi pi-times"
-                                                class="btn-cancel"
-                                                type="button"
-                                                (click)="togglePasswordForm()">
-                                            </button>
-                                            <button pButton
-                                                [label]="submitting ? 'Actualizando...' : 'Actualizar contraseña'"
-                                                icon="pi pi-check"
-                                                class="btn-save"
-                                                type="submit"
-                                                [disabled]="changePasswordForm.invalid || submitting"
-                                                [loading]="submitting">
-                                            </button>
-                                        </div>
-                                    </form>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- MIS ALERTAS -->
-                        <div class="content-card">
-                            <div class="card-header">
-                                <div class="card-header-icon" style="background: linear-gradient(135deg, #D4E157, #A3C92A);">
-                                    <i class="pi pi-bell"></i>
-                                </div>
-                                <div>
-                                    <h3 class="card-title">Mis Alertas</h3>
-                                    <p class="card-subtitle">Recibe notificaciones cuando haya nuevas propiedades</p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                @if (alertasCargando) {
-                                    <div class="flex items-center justify-center py-8">
-                                        <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
-                                    </div>
-                                } @else if (alertasError) {
-                                    <div class="text-center py-8">
-                                        <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-                                            <i class="pi pi-exclamation-triangle text-2xl text-red-400"></i>
-                                        </div>
-                                        <p class="text-red-500 font-medium">Error al cargar alertas</p>
-                                        <p class="text-gray-400 text-sm mt-1">{{ alertasErrorMsg }}</p>
-                                        <button pButton
-                                            label="Reintentar"
-                                            icon="pi pi-refresh"
-                                            class="p-button-text mt-3"
-                                            (click)="cargarAlertas()">
-                                        </button>
-                                    </div>
-                                } @else if (alertas.length === 0) {
-                                    <div class="text-center py-8">
-                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                            <i class="pi pi-bell-slash text-2xl text-gray-400"></i>
-                                        </div>
-                                        <p class="text-gray-500 font-medium">No tienes alertas configuradas</p>
-                                        <p class="text-gray-400 text-sm mt-1">Busca propiedades y crea una alerta para recibir notificaciones</p>
-                                    </div>
-                                } @else {
-                                    <div class="alertas-list">
-                                        @for (alerta of alertas; track alerta.id_alerta) {
-                                            <div class="alerta-item">
-                                                <div class="alerta-item-icon">
-                                                    <i class="pi pi-bell"></i>
-                                                </div>
-                                                <div class="alerta-item-info">
-                                                    <span class="alerta-item-title">
-                                                        @if (alerta.cp_alerta && alerta.provincia_alerta) {
-                                                            {{ alerta.cp_alerta }} - {{ alerta.provincia_alerta }}
-                                                        } @else if (alerta.cp_alerta) {
-                                                            CP: {{ alerta.cp_alerta }}
-                                                        } @else if (alerta.provincia_alerta) {
-                                                            {{ alerta.provincia_alerta }}
-                                                        } @else {
-                                                            Todas las propiedades
-                                                        }
-                                                    </span>
-                                                    <span class="alerta-item-email">
-                                                        <i class="pi pi-envelope"></i>
-                                                        {{ alerta.correo_alerta }}
-                                                    </span>
-                                                    <span class="alerta-item-date">
-                                                        @if (alerta.fecha_creacion) {
-                                                            <i class="pi pi-calendar"></i>
-                                                            {{ alerta.fecha_creacion | date:'dd/MM/yyyy' }}
-                                                        }
-                                                    </span>
-                                                </div>
-                                                <button pButton
-                                                    icon="pi pi-trash"
-                                                    class="alerta-delete-btn"
-                                                    (click)="confirmarEliminarAlerta(alerta)"
-                                                    pTooltip="Eliminar alerta"
-                                                    tooltipPosition="left"
-                                                ></button>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
                     </div>
 
-                    <!-- COLUMNA DERECHA (1/3) -->
-                    <div class="space-y-8">
-
-                        <!-- Publicar Anuncio -->
-                        <div class="publish-card">
-                            <div class="publish-glow"></div>
-                            <div class="publish-content">
-                                <div class="publish-icon-circle">
-                                    <i class="pi pi-megaphone"></i>
+                    <!-- Seguridad / Cambiar Contraseña -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-700">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                                <i class="pi pi-lock text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Seguridad</h3>
+                                <p class="text-sm text-gray-400">Gestiona tu contraseña y mantén tu cuenta segura</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            @if (!showPasswordForm) {
+                            <div class="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="pi pi-shield text-white text-base"></i>
                                 </div>
-                                <h3 class="publish-title">¡Publica tu anuncio!</h3>
-                                <p class="publish-desc">
-                                    ¿Tienes una propiedad para vender o alquilar? Llega a miles de personas interesadas.
+                                <div class="flex-1">
+                                    <p class="font-bold text-gray-900 dark:text-white text-sm">Contraseña segura</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Mantén tu cuenta segura actualizando tu contraseña regularmente</p>
+                                </div>
+                                <button
+                                    pButton
+                                    label="Cambiar contraseña"
+                                    icon="pi pi-key"
+                                    class="!bg-gray-900 dark:!bg-white !text-white dark:!text-gray-900 !font-bold !rounded-full !border-0 !px-5 !py-2.5 !text-sm !shadow-md hover:!shadow-lg !transition-all"
+                                    (click)="togglePasswordForm()"
+                                ></button>
+                            </div>
+                            } @else {
+                            <form [formGroup]="changePasswordForm" (submit)="changePassword()" class="space-y-5">
+                                @if (errorMsg) {
+                                <div class="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400">
+                                    <i class="pi pi-exclamation-triangle text-sm flex-shrink-0"></i>
+                                    <span>{{ errorMsg }}</span>
+                                </div>
+                                }
+
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contraseña actual</label>
+                                    <p-password formControlName="currentPassword" placeholder="Ingresa tu contraseña actual" [toggleMask]="true" [feedback]="false" styleClass="w-full" [fluid]="true"></p-password>
+                                    @if (changePasswordForm.get('currentPassword')?.invalid && (changePasswordForm.get('currentPassword')?.dirty || changePasswordForm.get('currentPassword')?.touched)) {
+                                    <small class="text-red-500 text-xs font-semibold">
+                                        @if (changePasswordForm.get('currentPassword')?.errors?.['required']) { La contraseña actual es obligatoria. } @if (changePasswordForm.get('currentPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. }
+                                    </small>
+                                    }
+                                </div>
+
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nueva contraseña</label>
+                                    <p-password formControlName="newPassword" placeholder="Mín. 8 carac. y 1 especial (!@#$%^&*)" [toggleMask]="true" [feedback]="true" styleClass="w-full" [fluid]="true"></p-password>
+                                    @if (changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)) {
+                                    <small class="text-red-500 text-xs font-semibold">
+                                        @if (changePasswordForm.get('newPassword')?.errors?.['required']) { La nueva contraseña es obligatoria. } @if (changePasswordForm.get('newPassword')?.errors?.['minlength']) { Mínimo 8 caracteres. } @if
+                                        (changePasswordForm.get('newPassword')?.errors?.['passwordPattern']) { Debe contener exactamente 1 carácter especial (!@#$%^&*). }
+                                    </small>
+                                    }
+                                </div>
+
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Confirmar nueva contraseña</label>
+                                    <p-password formControlName="confirmPassword" placeholder="Repite tu nueva contraseña" [toggleMask]="true" [feedback]="false" styleClass="w-full" [fluid]="true"></p-password>
+                                    @if (changePasswordForm.get('confirmPassword')?.errors?.['required'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
+                                    <small class="text-red-500 text-xs font-semibold">Debes confirmar la nueva contraseña.</small>
+                                    } @if (changePasswordForm.get('confirmPassword')?.errors?.['mismatch'] && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)) {
+                                    <small class="text-red-500 text-xs font-semibold">Las contraseñas no coinciden.</small>
+                                    }
+                                </div>
+
+                                <div class="flex justify-end gap-3 pt-2">
+                                    <button pButton label="Cancelar" icon="pi pi-times" class="!bg-transparent !text-gray-400 !font-bold !border-0 hover:!text-red-500 !transition-all" type="button" (click)="togglePasswordForm()"></button>
+                                    <button
+                                        pButton
+                                        [label]="submitting ? 'Actualizando...' : 'Actualizar contraseña'"
+                                        icon="pi pi-check"
+                                        class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25"
+                                        type="submit"
+                                        [disabled]="changePasswordForm.invalid || submitting"
+                                        [loading]="submitting"
+                                    ></button>
+                                </div>
+                            </form>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- MIS ALERTAS -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-700">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                                <i class="pi pi-bell text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Mis Alertas</h3>
+                                <p class="text-sm text-gray-400">Recibe notificaciones cuando haya nuevas propiedades</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            @if (alertasCargando) {
+                            <div class="flex items-center justify-center py-8">
+                                <i class="pi pi-spin pi-spinner text-3xl text-emerald-400"></i>
+                            </div>
+                            } @else if (alertasError) {
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+                                    <i class="pi pi-exclamation-triangle text-2xl text-red-400"></i>
+                                </div>
+                                <p class="text-red-500 font-bold">Error al cargar alertas</p>
+                                <p class="text-gray-400 text-sm mt-1">{{ alertasErrorMsg }}</p>
+                                <button pButton label="Reintentar" icon="pi pi-refresh" class="p-button-text !text-emerald-500 !font-bold mt-3" (click)="cargarAlertas()"></button>
+                            </div>
+                            } @else if (alertas.length === 0) {
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                                    <i class="pi pi-bell-slash text-2xl text-gray-400"></i>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 font-bold">No tienes alertas configuradas</p>
+                                <p class="text-gray-400 text-sm mt-1">Busca propiedades y crea una alerta para recibir notificaciones</p>
+                            </div>
+                            } @else {
+                            <div class="space-y-2">
+                                @for (alerta of alertas; track alerta.id_alerta) {
+                                <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
+                                        <i class="pi pi-bell text-white text-xs"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                            @if (alerta.cp_alerta && alerta.provincia_alerta) { {{ alerta.cp_alerta }} - {{ alerta.provincia_alerta }} } @else if (alerta.cp_alerta) { CP: {{ alerta.cp_alerta }} } @else if (alerta.provincia_alerta) {
+                                            {{ alerta.provincia_alerta }} } @else { Todas las propiedades }
+                                        </p>
+                                        <div class="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
+                                            <span><i class="pi pi-envelope mr-1"></i>{{ alerta.correo_alerta }}</span>
+                                            @if (alerta.fecha_creacion) {
+                                            <span><i class="pi pi-calendar mr-1"></i>{{ alerta.fecha_creacion | date:'dd/MM/yyyy' }}</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <button
+                                        pButton
+                                        icon="pi pi-trash"
+                                        class="!bg-transparent !text-gray-400 !w-9 !h-9 !rounded-xl hover:!bg-red-50 hover:!text-red-500 !transition-all !border-0"
+                                        (click)="confirmarEliminarAlerta(alerta)"
+                                        pTooltip="Eliminar alerta"
+                                        tooltipPosition="left"
+                                    ></button>
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA DERECHA (1/3) -->
+                <div class="space-y-8">
+                    <!-- Publicar Anuncio -->
+                    <div class="relative bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-8 overflow-hidden shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/35 hover:-translate-y-1 transition-all">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center mx-auto mb-5 border-2 border-white/30 hover:scale-110 hover:-rotate-6 transition-transform">
+                                <i class="pi pi-megaphone text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-black text-white mb-3">¡Publica tu anuncio!</h3>
+                            <p class="text-emerald-50/80 text-sm mb-6 leading-relaxed">¿Tienes una propiedad para vender o alquilar? Llega a miles de personas interesadas.</p>
+                            <div class="flex flex-col items-center gap-2 mb-6">
+                                <div class="flex items-center gap-2 text-sm font-bold text-white">
+                                    <i class="pi pi-check-circle text-emerald-200"></i>
+                                    <span>Llega a más compradores</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm font-bold text-white">
+                                    <i class="pi pi-check-circle text-emerald-200"></i>
+                                    <span>Publicación gratuita</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm font-bold text-white">
+                                    <i class="pi pi-check-circle text-emerald-200"></i>
+                                    <span>Gestión sencilla</span>
+                                </div>
+                            </div>
+                            <button
+                                pButton
+                                label="Publicar ahora"
+                                icon="pi pi-plus-circle"
+                                class="!bg-white !text-emerald-600 !font-black !rounded-full !border-0 !px-8 !py-3 !shadow-lg hover:!bg-emerald-50 hover:!shadow-xl !transition-all !w-full"
+                                (click)="goToPublish()"
+                            ></button>
+                            <button
+                                pButton
+                                label="Mis publicaciones"
+                                icon="pi pi-list"
+                                class="!bg-white/20 !text-white !font-bold !rounded-full !border-2 !border-white/30 !px-6 !py-2.5 hover:!bg-white/30 !transition-all !w-full !mt-3"
+                                (click)="goToPublicaciones()"
+                            ></button>
+                        </div>
+                    </div>
+
+                    <!-- Notificaciones -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-700">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                                <i class="pi pi-bell text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Notificaciones</h3>
+                                <p class="text-sm text-gray-400">
+                                    Últimas notificaciones @if (notificacionesNoLeidas > 0) {
+                                    <span class="inline-block bg-violet-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-1.5 align-middle">{{ notificacionesNoLeidas }} sin leer</span>
+                                    }
                                 </p>
-                                <div class="publish-benefits">
-                                    <div class="benefit-row">
-                                        <i class="pi pi-check-circle"></i>
-                                        <span>Llega a más compradores</span>
-                                    </div>
-                                    <div class="benefit-row">
-                                        <i class="pi pi-check-circle"></i>
-                                        <span>Publicación gratuita</span>
-                                    </div>
-                                    <div class="benefit-row">
-                                        <i class="pi pi-check-circle"></i>
-                                        <span>Gestión sencilla</span>
-                                    </div>
-                                </div>
-                                <button pButton
-                                    label="Publicar ahora"
-                                    icon="pi pi-plus-circle"
-                                    class="publish-btn"
-                                    (click)="goToPublish()">
-                                </button>
-                                <button pButton
-                                    label="Mis publicaciones"
-                                    icon="pi pi-list"
-                                    class="my-pubs-btn"
-                                    (click)="goToPublicaciones()">
-                                </button>
                             </div>
                         </div>
-
-                        <!-- Notificaciones -->
-                        <div class="content-card">
-                            <div class="card-header">
-                                <div class="card-header-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                                    <i class="pi pi-bell"></i>
-                                </div>
-                                <div>
-                                    <h3 class="card-title">Notificaciones</h3>
-                                    <p class="card-subtitle">
-                                        Últimas notificaciones
-                                        @if (notificacionesNoLeidas > 0) {
-                                            <span class="noti-badge">{{ notificacionesNoLeidas }} sin leer</span>
-                                        }
-                                    </p>
-                                </div>
+                        <div class="p-0">
+                            @if (notificacionesCargando) {
+                            <div class="flex items-center justify-center py-8">
+                                <i class="pi pi-spin pi-spinner text-3xl text-violet-400"></i>
                             </div>
-                            <div class="card-body p-0">
-                                @if (notificacionesCargando) {
-                                    <div class="flex items-center justify-center py-8">
-                                        <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+                            } @else if (notificaciones.length === 0) {
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                                    <i class="pi pi-inbox text-2xl text-gray-400"></i>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 font-bold">No tienes notificaciones</p>
+                                <p class="text-gray-400 text-sm mt-1 px-4">Las notificaciones aparecerán aquí cuando tengas nuevas propiedades que coincidan con tus alertas</p>
+                            </div>
+                            } @else {
+                            <div>
+                                @for (noti of notificaciones; track noti.id_noti) {
+                                <div
+                                    class="flex items-center gap-3 px-6 py-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                                    [class.bg-violet-50/50 dark:!bg-violet-900/10]="!noti.leida_noti"
+                                    (click)="irANotificacion(noti)"
+                                >
+                                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" [class.bg-violet-500]="!noti.leida_noti" [class.bg-gray-300]="noti.leida_noti"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ noti.mensaje_noti }}</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">{{ noti.fecha_noti | date:'dd/MM/yyyy HH:mm' }}</p>
                                     </div>
-                                } @else if (notificaciones.length === 0) {
-                                    <div class="text-center py-8">
-                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                            <i class="pi pi-inbox text-2xl text-gray-400"></i>
-                                        </div>
-                                        <p class="text-gray-500 font-medium">No tienes notificaciones</p>
-                                        <p class="text-gray-400 text-sm mt-1">Las notificaciones aparecerán aquí cuando tengas nuevas propiedades que coincidan con tus alertas</p>
-                                    </div>
-                                } @else {
-                                    <div class="activity-list">
-                                        @for (noti of notificaciones; track noti.id_noti) {
-                                            <div class="activity-item" [class.noti-unread]="!noti.leida_noti" (click)="irANotificacion(noti)" style="cursor: pointer;">
-                                                <div class="activity-dot" [class.bg-purple-500]="!noti.leida_noti" [class.bg-gray-300]="noti.leida_noti"></div>
-                                                <div class="activity-info">
-                                                    <span class="activity-text">{{ noti.mensaje_noti }}</span>
-                                                    <span class="activity-time">{{ noti.fecha_noti | date:'dd/MM/yyyy HH:mm' }}</span>
-                                                </div>
-                                                @if (!noti.leida_noti) {
-                                                    <span class="noti-dot"></span>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
+                                    @if (!noti.leida_noti) {
+                                    <span class="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0"></span>
+                                    }
+                                </div>
                                 }
                             </div>
+                            }
                         </div>
-
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
     <footer-widget class="mt-auto" />
 </div>

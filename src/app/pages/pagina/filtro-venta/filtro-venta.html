@@ -1,77 +1,86 @@
-<div class="filters-container">
-    <div class="filters-header">
-        <div class="flex items-center gap-3">
-            <div class="header-dot"></div>
-            <h3 class="text-xl font-black text-gray-900 m-0">Filtros Venta</h3>
-        </div>
-        <button pButton icon="pi pi-refresh" class="p-button-text p-button-secondary p-button-sm font-bold" label="Limpiar" (click)="limpiarFiltros()"></button>
+<div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden sticky top-24">
+  <div class="p-5 border-b border-gray-100 dark:border-gray-700">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+        <h3 class="text-lg font-black text-gray-900 dark:text-white">Filtros Venta</h3>
+      </div>
+      <button pButton icon="pi pi-refresh"
+        class="!bg-transparent !text-gray-400 !font-bold !border-0 !text-xs hover:!text-emerald-500 !transition-all"
+        label="Limpiar" (click)="limpiarFiltros()"></button>
+    </div>
+  </div>
+
+  <div class="p-5 space-y-6">
+    <!-- Precio Máximo -->
+    <div>
+      <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">Hasta tal precio</label>
+      <p-inputNumber [(ngModel)]="precioMax" placeholder="P. ej. 250.000"
+        class="w-full custom-input-number"
+        mode="currency" currency="EUR" [min]="0"
+        (onInput)="aplicarFiltros()"
+        inputStyleClass="!w-full !px-3.5 !py-2.5 !bg-gray-50 dark:!bg-gray-700/50 !border-2 !border-gray-200 dark:!border-gray-600 !rounded-xl !text-sm !font-medium !text-gray-900 dark:!text-white !outline-none focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 !transition-all !placeholder:text-gray-400">
+      </p-inputNumber>
     </div>
 
-    <div class="filters-body">
-        <!-- Precio Máximo -->
-        <div class="filter-group">
-            <label class="group-label">Hasta tal precio</label>
-            <p-inputNumber [(ngModel)]="precioMax" placeholder="P. ej. 250.000" class="w-full custom-input-number" mode="currency" currency="EUR" [min]="0" (onInput)="aplicarFiltros()"></p-inputNumber>
+    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+    <!-- Tipo de Propiedad -->
+    <div>
+      <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-3">Tipo de Propiedad</label>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center group cursor-pointer">
+          <p-checkbox name="tipo" value="casa" [(ngModel)]="tiposPropiedad" (onChange)="aplicarFiltros()" inputId="tipo_casa"></p-checkbox>
+          <label for="tipo_casa" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">Casa</label>
         </div>
-
-        <div class="section-divider"></div>
-
-        <!-- Tipo de Propiedad -->
-        <div class="filter-group">
-            <label class="group-label">Tipo de Propiedad</label>
-            <div class="flex flex-col gap-3">
-                <div class="flex items-center group cursor-pointer">
-                    <p-checkbox name="tipo" value="casa" [(ngModel)]="tiposPropiedad" (onChange)="aplicarFiltros()" inputId="tipo_casa"></p-checkbox>
-                    <label for="tipo_casa" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">Casa</label>
-                </div>
-                <div class="flex items-center group cursor-pointer">
-                    <p-checkbox name="tipo" value="piso" [(ngModel)]="tiposPropiedad" (onChange)="aplicarFiltros()" inputId="tipo_piso"></p-checkbox>
-                    <label for="tipo_piso" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">Piso</label>
-                </div>
-            </div>
+        <div class="flex items-center group cursor-pointer">
+          <p-checkbox name="tipo" value="piso" [(ngModel)]="tiposPropiedad" (onChange)="aplicarFiltros()" inputId="tipo_piso"></p-checkbox>
+          <label for="tipo_piso" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">Piso</label>
         </div>
-
-        <div class="section-divider"></div>
-
-        <!-- Habitaciones -->
-        <div class="filter-group">
-            <label class="group-label">Habitaciones</label>
-            <div class="grid grid-cols-2 gap-3">
-                <div *ngFor="let n of [1,2,3,4]" class="flex items-center group">
-                    <p-checkbox name="hab" [value]="n" [(ngModel)]="habitaciones" (onChange)="aplicarFiltros()" [inputId]="'hab_' + n"></p-checkbox>
-                    <label [for]="'hab_' + n" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">{{ n === 4 ? '4+' : n }}</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- Baños -->
-        <div class="filter-group">
-            <label class="group-label">Baños</label>
-            <div class="grid grid-cols-3 gap-3">
-                <div *ngFor="let n of [1,2,3]" class="flex items-center group">
-                    <p-checkbox name="banos" [value]="n" [(ngModel)]="banos" (onChange)="aplicarFiltros()" [inputId]="'banos_' + n"></p-checkbox>
-                    <label [for]="'banos_' + n" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">{{ n === 3 ? '3+' : n }}</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- Estado del Inmueble -->
-        <div class="filter-group">
-            <label class="group-label">Estado del Inmueble</label>
-            <div class="flex flex-col gap-4">
-                <div class="flex items-center group cursor-pointer">
-                    <p-radioButton name="estado" value="reformado" [(ngModel)]="estado" (onClick)="aplicarFiltros()" inputId="estado_reformado"></p-radioButton>
-                    <label for="estado_reformado" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">Reformado</label>
-                </div>
-                <div class="flex items-center group cursor-pointer">
-                    <p-radioButton name="estado" value="a_reformar" [(ngModel)]="estado" (onClick)="aplicarFiltros()" inputId="estado_a_reformar"></p-radioButton>
-                    <label for="estado_a_reformar" class="ml-3 font-bold text-gray-600 group-hover:text-gray-900 cursor-pointer transition-colors">A reformar</label>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+    <!-- Habitaciones -->
+    <div>
+      <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-3">Habitaciones</label>
+      <div class="grid grid-cols-2 gap-3">
+        <div *ngFor="let n of [1,2,3,4]" class="flex items-center group">
+          <p-checkbox name="hab" [value]="n" [(ngModel)]="habitaciones" (onChange)="aplicarFiltros()" [inputId]="'hab_' + n"></p-checkbox>
+          <label [for]="'hab_' + n" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">{{ n === 4 ? '4+' : n }}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+    <!-- Baños -->
+    <div>
+      <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-3">Baños</label>
+      <div class="grid grid-cols-3 gap-3">
+        <div *ngFor="let n of [1,2,3]" class="flex items-center group">
+          <p-checkbox name="banos" [value]="n" [(ngModel)]="banos" (onChange)="aplicarFiltros()" [inputId]="'banos_' + n"></p-checkbox>
+          <label [for]="'banos_' + n" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">{{ n === 3 ? '3+' : n }}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+    <!-- Estado del Inmueble -->
+    <div>
+      <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-3">Estado del Inmueble</label>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center group cursor-pointer">
+          <p-radioButton name="estado" value="reformado" [(ngModel)]="estado" (onClick)="aplicarFiltros()" inputId="estado_reformado"></p-radioButton>
+          <label for="estado_reformado" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">Reformado</label>
+        </div>
+        <div class="flex items-center group cursor-pointer">
+          <p-radioButton name="estado" value="a_reformar" [(ngModel)]="estado" (onClick)="aplicarFiltros()" inputId="estado_a_reformar"></p-radioButton>
+          <label for="estado_a_reformar" class="ml-3 font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white cursor-pointer transition-colors text-sm">A reformar</label>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
