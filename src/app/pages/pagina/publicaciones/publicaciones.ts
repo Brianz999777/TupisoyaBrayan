@@ -223,7 +223,7 @@ import { catchError } from 'rxjs/operators';
                     </div>
                 </section>
             </div>
-            <footer-widget class="mt-auto" />
+            <app-footer-widget class="mt-auto" />
         </div>
 
         <!-- MODAL EDITAR VENTA -->

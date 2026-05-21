@@ -43,7 +43,7 @@ import { FooterWidget } from '../topbar/footerwidget';
                     </div>
                 </section>
             </div>
-            <footer-widget class="mt-auto" />
+            <app-footer-widget class="mt-auto" />
         </div>
     `
 })

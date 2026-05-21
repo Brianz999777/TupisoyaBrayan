@@ -125,7 +125,7 @@ import { TopbarWidget } from '../topbar/topbarwidget.component';
                 </div>
             </section>
 
-            <footer-widget />
+            <app-footer-widget />
         </div>
     `
 })

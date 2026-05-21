@@ -10,6 +10,8 @@ import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 import { Auth } from '../../service/auth.service';
@@ -20,6 +22,37 @@ interface FotoPreview {
     url: string;
     file: File;
     compressedBase64: string;
+}
+
+/** Comprime una imagen usando Canvas y devuelve un base64 en formato WebP (sin prefijo data:image/...) */
+function comprimirImagen(file: File, maxWidth: number = 1200, quality: number = 0.7): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = () => {
+            img.src = reader.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            if (width > maxWidth) {
+                height = (height * maxWidth) / width;
+                width = maxWidth;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0, width, height);
+            // Convertir a WebP con la calidad especificada y quitar el prefijo "data:image/webp;base64,"
+            // WebP pesa mucho menos que JPEG/PNG manteniendo buena calidad
+            const base64 = canvas.toDataURL('image/webp', quality).split(',')[1];
+            resolve(base64);
+        };
+        img.onerror = reject;
+    });
 }
 
 interface ExtraItem {
@@ -35,11 +68,12 @@ interface ExtraItem {
 @Component({
     selector: 'app-publicar-anuncio',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, TopbarWidget, FooterWidget, RippleModule, ButtonModule, InputTextModule, ToastModule, ProgressSpinnerModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, RouterModule, TopbarWidget, FooterWidget, RippleModule, ButtonModule, InputTextModule, ToastModule, ConfirmDialogModule, ProgressSpinnerModule],
+    providers: [MessageService, ConfirmationService],
     template: `
         <div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
             <p-toast position="top-right" />
+            <p-confirmDialog />
             <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
             <div class="flex-1">
                 <!-- Hero -->
@@ -87,8 +121,25 @@ interface ExtraItem {
                             @if (loading) {
                                 <div class="flex flex-col items-center justify-center py-20">
                                     <i class="pi pi-spin pi-spinner text-5xl text-emerald-400 mb-6"></i>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">Publicando anuncio...</p>
-                                    <p class="text-sm text-gray-500">Esto puede tomar unos segundos</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">
+                                        @if (subiendoFotos) {
+                                            Subiendo fotos...
+                                        } @else {
+                                            Publicando anuncio...
+                                        }
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        @if (subiendoFotos) {
+                                            {{ fotosPreview.length }} foto{{ fotosPreview.length !== 1 ? 's' : '' }} en proceso. No cierres esta ventana.
+                                        } @else {
+                                            Esto puede tomar unos segundos
+                                        }
+                                    </p>
+                                    @if (subiendoFotos) {
+                                        <div class="mt-6 w-48 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-pulse" style="width: 60%"></div>
+                                        </div>
+                                    }
                                 </div>
                             } @else {
                                 <!-- PASO 1 -->
@@ -397,7 +448,7 @@ interface ExtraItem {
                                                     <i class="pi pi-arrow-left text-sm"></i>
                                                     Anterior
                                                 </button>
-                                                <button type="button" (click)="publicar()"
+                                                <button type="button" (click)="confirmarPublicar()"
                                                     class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25">
                                                     <i class="pi pi-send text-sm"></i>
                                                     Publicar anuncio
@@ -431,7 +482,7 @@ interface ExtraItem {
                     </div>
                 </section>
             </div>
-            <footer-widget />
+            <app-footer-widget />
         </div>
     `,
     styles: [`
@@ -469,8 +520,10 @@ export class PublicarAnuncio implements OnInit {
     private auth = inject(Auth);
     private inmuebleService = inject(InmuebleService);
     private messageService = inject(MessageService);
+    private confirmationService = inject(ConfirmationService);
 
     loading = false;
+    subiendoFotos = false;
     pasoActual = 1;
 
     steps = [
@@ -625,7 +678,26 @@ export class PublicarAnuncio implements OnInit {
         if (this.pasoActual > 1) this.pasoActual--;
     }
 
-    publicar() {
+    confirmarPublicar() {
+        const tipo = this.formData.type === 'venta' ? 'venta' : 'alquiler';
+        const precio = this.formData.type === 'venta'
+            ? this.formData.precio_venta + ' €'
+            : this.formData.precio_alquiler + ' €/mes';
+        this.confirmationService.confirm({
+            message: `¿Estás seguro de que quieres publicar este anuncio de <strong>${tipo}</strong> por <strong>${precio}</strong>?<br><br>Dirección: ${this.formData.direccion_prop}, ${this.formData.numero_prop}<br>${this.fotosPreview.length} foto(s) adjunta(s).`,
+            header: 'Confirmar publicación',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sí, publicar',
+            rejectLabel: 'Cancelar',
+            acceptButtonStyleClass: 'p-button-success',
+            rejectButtonStyleClass: 'p-button-secondary',
+            accept: () => {
+                this.publicar();
+            }
+        });
+    }
+
+    async publicar() {
         if (!this.formData.descripcion) {
             this.messageService.add({ severity: 'warn', summary: 'Descripción requerida', detail: 'Añade una descripción de tu inmueble.' });
             return;
@@ -639,11 +711,28 @@ export class PublicarAnuncio implements OnInit {
         // Fecha actual en formato yyyy-MM-dd
         const hoy = new Date().toISOString().split('T')[0];
 
+        // 1️⃣ Comprimir fotos y restaurar el prefijo Data URL requerido por el backend y Cloudinary
+        const fotosBase64: string[] = [];
+        if (this.fotosPreview.length > 0) {
+            this.subiendoFotos = true;
+            for (const foto of this.fotosPreview) {
+                try {
+                    // La función te devuelve el base64 puro (sin el prefijo)
+                    const base64Limpio = await comprimirImagen(foto.file, 1200, 0.7);
+                    
+                    // 🌟 REPARACIÓN AQUÍ: Le reinyectamos la cabecera que Cloudinary Java necesita
+                    const base64ListoParaBack = `data:image/jpeg;base64,${base64Limpio}`;
+                    
+                    fotosBase64.push(base64ListoParaBack);
+                } catch (err) {
+                    console.error('❌ Error al comprimir imagen:', foto.file.name, err);
+                }
+            }
+        }
+
         // Construir payload en snake_case español como espera el backend
         const payload: any = {
-            // type requerido por Jackson @JsonTypeInfo para deserializar la subclase correcta
             type: this.formData.type,
-            // Datos generales de la propiedad
             nro_doc_dueno: nroDoc,
             tipo_via_prop: this.formData.tipo_via_prop,
             direccion_prop: this.formData.direccion_prop,
@@ -666,11 +755,11 @@ export class PublicarAnuncio implements OnInit {
             portero_automatico_prop: this.extrasValues['portero'] || false,
             permite_mascotas_prop: this.extrasValues['mascotas'] || false,
             alta_eficiencia_energetica_prop: this.extrasValues['eficiencia'] || false,
-            fotos_urls: null
+            // Array con el prefijo restaurado correctamente
+            fotos_urls: fotosBase64.length > 0 ? fotosBase64 : null
         };
 
         if (this.formData.type === 'venta') {
-            // Campos específicos de venta (snake_case español)
             payload.nro_habitaciones_venta = this.formData.nro_habitaciones;
             payload.nro_banos_venta = this.formData.nro_banos;
             payload.descripcion_venta = this.formData.descripcion;
@@ -684,7 +773,6 @@ export class PublicarAnuncio implements OnInit {
             payload.negociable_venta = false;
             payload.reforma_venta = false;
         } else {
-            // Campos específicos de alquiler (snake_case español)
             payload.nro_habitaciones_alquiler = this.formData.nro_habitaciones;
             payload.nro_banos_alquiler = this.formData.nro_banos;
             payload.descripcion_alquiler = this.formData.descripcion;
@@ -698,69 +786,38 @@ export class PublicarAnuncio implements OnInit {
             payload.permitevisitas_alquiler = false;
         }
 
-        console.log('📤 Enviando payload a Spring Boot (snake_case español):', JSON.stringify(payload, null, 2));
+        console.log('📤 Enviando payload a Spring Boot (con prefijos base64 en imágenes)...');
 
         if (this.formData.type === 'venta') {
             this.inmuebleService.crearVenta(payload).subscribe({
                 next: (response: any) => {
-                    console.log('✅ Respuesta crearVenta:', response);
-                    const id = response.id_prop || response.id;
-                    if (id && this.fotosPreview.length > 0) {
-                        this.uploadPhotos(id);
-                    } else {
-                        this.loading = false;
-                        this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
-                        setTimeout(() => this.router.navigate(['/']), 1500);
-                    }
+                    this.loading = false;
+                    this.subiendoFotos = false;
+                    this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
+                    setTimeout(() => this.router.navigate(['/']), 1500);
                 },
                 error: (err) => {
                     this.loading = false;
+                    this.subiendoFotos = false;
                     console.error('❌ Error al publicar venta:', err);
-                    console.error('   Status:', err.status, '- Mensaje:', err.message);
-                    console.error('   URL:', err.url);
-                    this.messageService.add({ severity: 'error', summary: 'Error ' + err.status, detail: 'El servidor rechazó la petición. Revisa la consola (F12).' });
+                    this.messageService.add({ severity: 'error', summary: 'Error ' + err.status, detail: 'El servidor rechazó la petición.' });
                 }
             });
         } else {
             this.inmuebleService.crearAlquiler(payload).subscribe({
                 next: (response: any) => {
-                    console.log('✅ Respuesta crearAlquiler:', response);
-                    const id = response.id_prop || response.id;
-                    if (id && this.fotosPreview.length > 0) {
-                        this.uploadPhotos(id);
-                    } else {
-                        this.loading = false;
-                        this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
-                        setTimeout(() => this.router.navigate(['/']), 1500);
-                    }
+                    this.loading = false;
+                    this.subiendoFotos = false;
+                    this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
+                    setTimeout(() => this.router.navigate(['/']), 1500);
                 },
                 error: (err) => {
                     this.loading = false;
+                    this.subiendoFotos = false;
                     console.error('❌ Error al publicar alquiler:', err);
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'No se pudo publicar el anuncio. Revisa la consola.' });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'No se pudo publicar el anuncio.' });
                 }
             });
         }
-    }
-
-    private uploadPhotos(propiedadId: number) {
-        const formData = new FormData();
-        this.fotosPreview.forEach((foto) => {
-            formData.append('fotos', foto.file);
-        });
-        // Enviar FormData directamente como multipart/form-data
-        this.inmuebleService.subirFotos(propiedadId, this.formData.type, formData).subscribe({
-            next: () => this.onUploadComplete(),
-            error: (err) => {
-                console.error('❌ Error al subir fotos:', err);
-                this.onUploadComplete();
-            }
-        });
-    }
-
-    private onUploadComplete() {
-        this.loading = false;
-        this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
-        setTimeout(() => this.router.navigate(['/']), 1500);
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -78,8 +78,7 @@ export class Perfil implements OnInit {
         private alertaService: AlertaService,
         private notificacionService: NotificacionService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private cdr: ChangeDetectorRef
+        private confirmationService: ConfirmationService
     ) {
         this.changePasswordForm = this.fb.group(
             {
@@ -114,12 +113,10 @@ export class Perfil implements OnInit {
                 this.notificaciones = data;
                 this.notificacionesNoLeidas = data.filter((n) => !n.leida_noti).length;
                 this.notificacionesCargando = false;
-                this.cdr.detectChanges();
             },
             error: (err) => {
                 console.error('[Perfil] Error al cargar notificaciones:', err);
                 this.notificacionesCargando = false;
-                this.cdr.detectChanges();
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
@@ -151,13 +148,11 @@ export class Perfil implements OnInit {
                 });
                 this.alertas = ordenadas.slice(0, 5);
                 this.alertasCargando = false;
-                this.cdr.detectChanges();
             },
             error: (err) => {
                 console.error('[Perfil] Error al cargar alertas:', err);
                 this.alertasCargando = false;
                 this.alertasError = true;
-                this.cdr.detectChanges();
                 this.alertasErrorMsg = err.status === 0 ? 'No se pudo conectar con el servidor.' : err.status === 404 ? 'No se encontraron alertas para este usuario.' : `Error del servidor (${err.status}).`;
                 this.messageService.add({
                     severity: 'error',

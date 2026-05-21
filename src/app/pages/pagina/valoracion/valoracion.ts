@@ -230,7 +230,7 @@ import { InputTextModule } from 'primeng/inputtext';
                     </div>
                 </section>
             </div>
-            <footer-widget class="mt-auto" />
+            <app-footer-widget class="mt-auto" />
         </div>
     `,
     styles: [`

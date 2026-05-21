@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PropiedadVenta, PropiedadAlquiler, InmuebleVentaDto, TarjetaVenta, TarjetaAlquiler } from '../interfaces/inmueble';
@@ -76,6 +76,8 @@ export class InmuebleService {
 
   subirFotos(propiedadId: number, type: string, formData: FormData): Observable<any> {
     const endpoint = type === 'venta' ? 'ventas' : 'alquiler';
+    // NO establecer Content-Type manualmente - Angular/el navegador lo genera automáticamente con el boundary correcto para multipart/form-data
+    // Se usa reportProgress para tracking y se evita que el interceptor sobreescriba el Content-Type
     return this.http.post<any>(`${this.baseUrl}/${endpoint}/${propiedadId}/fotos`, formData);
   }
 }

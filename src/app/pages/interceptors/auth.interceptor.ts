@@ -23,11 +23,19 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // --- PARTE 1: AGREGAR EL TOKEN SOLO A RUTAS NO PÚBLICAS ---
   if (token && !esRutaPublica(req.url)) {
-    request = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    // Si el body es FormData, NO clonar el request para no perder el Content-Type multipart/form-data con su boundary
+    if (req.body instanceof FormData) {
+      // Para FormData, NO podemos usar setHeaders porque Angular pierde el Content-Type multipart/form-data
+      // En su lugar, usamos headers que no sobrescriban el Content-Type automático del navegador
+      const headers = req.headers.set('Authorization', `Bearer ${token}`);
+      request = req.clone({ headers });
+    } else {
+      request = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
   }
 
   // --- PARTE 2: MANEJO DE ERRORES ---

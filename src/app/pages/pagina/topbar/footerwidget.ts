@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-    selector: 'footer-widget',
+    selector: 'app-footer-widget',
     standalone: true,
     imports: [RouterModule],
     template: `
