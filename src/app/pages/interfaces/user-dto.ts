@@ -2,6 +2,7 @@ export interface UserDTO {
   nro_doc_dto: string;
   email_dto: string;
   rol_dto: string;
+  nombre_dto: string;
   apellidos_dto: string;
   foto_dto: string | null;
   // Para compatibilidad con el perfil

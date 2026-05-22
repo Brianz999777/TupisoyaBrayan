@@ -1,4 +1,5 @@
 <div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+    <p-toast position="top-right" />
     <topbar-widget />
 
     <!-- ── ESTADO DE CARGA ── -->
@@ -65,7 +66,7 @@
                         </span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
                             <i class="pi pi-home text-[10px]"></i>
-                            {{ tipo === 'venta' ? (inmuebleVenta?.nro_habitaciones_venta || '?') : (inmuebleAlquiler?.nro_habitaciones || '?') }} hab.
+                            {{ (inmuebleVenta?.nro_habitaciones_prop || inmuebleAlquiler?.nro_habitaciones_prop || '?') }} hab.
                         </span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
                             <i class="pi pi-th-large text-[10px]"></i>
@@ -278,18 +279,18 @@
                         <div class="p-6 space-y-4">
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tu nombre</label>
-                                <input type="text" pInputText placeholder="Ej: María García" class="w-full" />
+                                <input type="text" pInputText placeholder="Ej: María García" class="w-full" [(ngModel)]="contacto_nombre" />
                             </div>
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tu email</label>
-                                <input type="email" pInputText placeholder="email@ejemplo.com" class="w-full" />
+                                <input type="email" pInputText placeholder="email@ejemplo.com" class="w-full" [(ngModel)]="contacto_email" />
                             </div>
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mensaje</label>
-                                <textarea pTextarea rows="3" placeholder="Estoy interesado en este inmueble..." class="w-full resize-none"></textarea>
+                                <textarea pTextarea rows="3" placeholder="Estoy interesado en este inmueble..." class="w-full resize-none" [(ngModel)]="contacto_mensaje"></textarea>
                             </div>
                             <div class="flex flex-col gap-3 pt-2">
-                                <button pButton label="Enviar mensaje" icon="pi pi-send" class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25 !w-full"></button>
+                                <button pButton [disabled]="enviando_contacto" (click)="enviarContacto()" label="Enviar mensaje" icon="pi pi-send" class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25 !w-full"></button>
                                 <button pButton label="Llamar al agente" icon="pi pi-phone" class="!bg-gray-900 dark:!bg-white !text-white dark:!text-gray-900 !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!bg-emerald-600 hover:!text-white !transition-all !shadow-md !w-full"></button>
                             </div>
                         </div>
@@ -310,7 +311,6 @@
         </div>
     </section>
 
-    <app-footer-widget class="mt-auto" />
     }
 
     <!-- ── MODAL FULLSCREEN ── -->

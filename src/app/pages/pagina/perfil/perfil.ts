@@ -286,13 +286,18 @@ export class Perfil implements OnInit {
 
     getInitials(): string {
         if (!this.user) return '?';
+        const nombre = this.user.nombre_dto || '';
         const apellidos = this.user.apellidos_dto || '';
-        return apellidos.charAt(0).toUpperCase() || '?';
+        const inicialNombre = nombre.charAt(0).toUpperCase();
+        const inicialApellido = apellidos.charAt(0).toUpperCase();
+        return (inicialNombre + inicialApellido) || '?';
     }
 
     getFullName(): string {
         if (!this.user) return 'Usuario';
-        return this.user.apellidos_dto || 'Usuario';
+        const nombre = this.user.nombre_dto || '';
+        const apellidos = this.user.apellidos_dto || '';
+        return (nombre + ' ' + apellidos).trim() || 'Usuario';
     }
 
     getEmail(): string {

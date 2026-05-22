@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { GalleriaModule } from 'primeng/galleria';
@@ -8,10 +9,12 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { PropiedadAlquiler, PropiedadVenta } from '../../interfaces/inmueble';
 import { InmuebleService } from '../../service/inmueble.service';
+import { Auth } from '../../service/auth.service';
 import { TopbarWidget } from '../topbar/topbarwidget.component';
-import { FooterWidget } from '../topbar/footerwidget';
 
 @Component({
   selector: 'app-detalle-inmueble',
@@ -25,9 +28,11 @@ import { FooterWidget } from '../topbar/footerwidget';
     DividerModule,
     InputTextModule,
     TextareaModule,
-    TopbarWidget,
-    FooterWidget
+    ToastModule,
+    FormsModule,
+    TopbarWidget
   ],
+  providers: [MessageService],
   templateUrl: './detalle-inmueble.html',
   styleUrl: './detalle-inmueble.scss',
 })
@@ -52,13 +57,55 @@ export class DetalleInmueble implements OnInit, OnChanges {
   ];
 
   router = inject(Router);
+  private messageService = inject(MessageService);
+
+  // Formulario de contacto
+  contacto_nombre = '';
+  contacto_email = '';
+  contacto_mensaje = '';
+  enviando_contacto = false;
 
   constructor(
     private route: ActivatedRoute,
     private inmuebleService: InmuebleService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private auth: Auth
   ) {}
+
+  enviarContacto() {
+    if (!this.contacto_nombre.trim() || !this.contacto_email.trim() || !this.contacto_mensaje.trim()) {
+      this.messageService.add({ severity: 'warn', summary: 'Campos incompletos', detail: 'Rellena todos los campos del formulario.' });
+      return;
+    }
+    if (!this.id) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se ha podido identificar el inmueble.' });
+      return;
+    }
+    this.enviando_contacto = true;
+    const payload = {
+      nombre_usuario_email: this.contacto_nombre.trim(),
+      email_usuario_email: this.contacto_email.trim(),
+      mensaje_email: this.contacto_mensaje.trim(),
+      id_prop_email: this.id
+    };
+    console.log('[Contacto] this.id vale:', this.id, '(tipo:', typeof this.id, ')');
+    console.log('[Contacto] Enviando payload:', JSON.stringify(payload, null, 2));
+    this.inmuebleService.enviarEmailContacto(payload).subscribe({
+      next: (res) => {
+        this.enviando_contacto = false;
+        this.messageService.add({ severity: 'success', summary: 'Mensaje enviado', detail: 'El anunciante recibirá tu mensaje en su correo.' });
+        this.contacto_nombre = '';
+        this.contacto_email = '';
+        this.contacto_mensaje = '';
+      },
+      error: (err) => {
+        this.enviando_contacto = false;
+        console.error('Error al enviar contacto:', err);
+        this.messageService.add({ severity: 'error', summary: 'Error al enviar', detail: err.error || 'No se pudo enviar el mensaje. Inténtalo de nuevo.' });
+      }
+    });
+  }
 
   volver() {
     this.router.navigate([], {
@@ -68,6 +115,13 @@ export class DetalleInmueble implements OnInit, OnChanges {
     });
   }
   ngOnInit() {
+    // Precargar datos del usuario logueado en el formulario de contacto
+    const user = this.auth.getUser();
+    if (user) {
+      this.contacto_nombre = user.nombre_dto || '';
+      this.contacto_email = user.email_dto || '';
+    }
+
     // Si ya tenemos inputs (vía @Input), cargamos directamente
     if (this.idInput && this.tipoInput) {
       this.cargarDatos(this.idInput, this.tipoInput);

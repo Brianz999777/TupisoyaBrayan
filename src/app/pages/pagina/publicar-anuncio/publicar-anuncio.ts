@@ -24,37 +24,6 @@ interface FotoPreview {
     compressedBase64: string;
 }
 
-/** Comprime una imagen usando Canvas y devuelve un base64 en formato WebP (sin prefijo data:image/...) */
-function comprimirImagen(file: File, maxWidth: number = 1200, quality: number = 0.7): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        const reader = new FileReader();
-        reader.onload = () => {
-            img.src = reader.result as string;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let { width, height } = img;
-            if (width > maxWidth) {
-                height = (height * maxWidth) / width;
-                width = maxWidth;
-            }
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d')!;
-            ctx.drawImage(img, 0, 0, width, height);
-            // Convertir a WebP con la calidad especificada y quitar el prefijo "data:image/webp;base64,"
-            // WebP pesa mucho menos que JPEG/PNG manteniendo buena calidad
-            const base64 = canvas.toDataURL('image/webp', quality).split(',')[1];
-            resolve(base64);
-        };
-        img.onerror = reject;
-    });
-}
-
 interface ExtraItem {
     key: string;
     label: string;
@@ -121,25 +90,8 @@ interface ExtraItem {
                             @if (loading) {
                                 <div class="flex flex-col items-center justify-center py-20">
                                     <i class="pi pi-spin pi-spinner text-5xl text-emerald-400 mb-6"></i>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                        @if (subiendoFotos) {
-                                            Subiendo fotos...
-                                        } @else {
-                                            Publicando anuncio...
-                                        }
-                                    </p>
-                                    <p class="text-sm text-gray-500">
-                                        @if (subiendoFotos) {
-                                            {{ fotosPreview.length }} foto{{ fotosPreview.length !== 1 ? 's' : '' }} en proceso. No cierres esta ventana.
-                                        } @else {
-                                            Esto puede tomar unos segundos
-                                        }
-                                    </p>
-                                    @if (subiendoFotos) {
-                                        <div class="mt-6 w-48 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-pulse" style="width: 60%"></div>
-                                        </div>
-                                    }
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">Publicando anuncio...</p>
+                                    <p class="text-sm text-gray-500">Esto puede tomar unos segundos</p>
                                 </div>
                             } @else {
                                 <!-- PASO 1 -->
@@ -621,21 +573,83 @@ export class PublicarAnuncio implements OnInit {
     processFiles(files: FileList) {
         const remaining = 10 - this.fotosPreview.length;
         const toProcess = Math.min(files.length, remaining);
-        for (let i = 0; i < toProcess; i++) {
+        const archivosValidos: File[] = [];
+        for (let i = 0; i < files.length && archivosValidos.length < remaining; i++) {
             const file = files[i];
-            if (file.size > 10 * 1024 * 1024) continue;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.fotoIdCounter++;
-                this.fotosPreview.push({
-                    id: this.fotoIdCounter,
-                    url: e.target?.result as string,
-                    file: file,
-                    compressedBase64: ''
+            if (file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024) {
+                archivosValidos.push(file);
+            }
+        }
+        if (archivosValidos.length === 0) return;
+
+        // Mostrar toast de carga
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Cargando imágenes...',
+            detail: `Procesando ${archivosValidos.length} foto(s) con canvas`,
+            life: 5000
+        });
+
+        archivosValidos.forEach((file) => {
+            const previewUrl = URL.createObjectURL(file);
+
+            // Usar canvas para comprimir la imagen a WebP
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1200;
+                const MAX_HEIGHT = 1200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d')!;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprimir a WebP con calidad 0.8 (incluye el prefijo data:image/webp;base64,...)
+                const compressedBase64 = canvas.toDataURL('image/webp', 0.8);
+
+                this.ngZone.run(() => {
+                    this.fotoIdCounter++;
+                    this.fotosPreview.push({
+                        id: this.fotoIdCounter,
+                        url: previewUrl,
+                        file,
+                        compressedBase64
+                    });
                 });
             };
-            reader.readAsDataURL(file);
-        }
+            img.onerror = () => {
+                // Fallback: si falla canvas, usar FileReader
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    this.ngZone.run(() => {
+                        this.fotoIdCounter++;
+                        this.fotosPreview.push({
+                            id: this.fotoIdCounter,
+                            url: previewUrl,
+                            file,
+                            compressedBase64: e.target.result
+                        });
+                    });
+                };
+                reader.readAsDataURL(file);
+            };
+            img.src = previewUrl;
+        });
     }
 
     eliminarFoto(index: number) {
@@ -697,7 +711,7 @@ export class PublicarAnuncio implements OnInit {
         });
     }
 
-    async publicar() {
+    publicar() {
         if (!this.formData.descripcion) {
             this.messageService.add({ severity: 'warn', summary: 'Descripción requerida', detail: 'Añade una descripción de tu inmueble.' });
             return;
@@ -711,113 +725,107 @@ export class PublicarAnuncio implements OnInit {
         // Fecha actual en formato yyyy-MM-dd
         const hoy = new Date().toISOString().split('T')[0];
 
-        // 1️⃣ Comprimir fotos y restaurar el prefijo Data URL requerido por el backend y Cloudinary
-        const fotosBase64: string[] = [];
-        if (this.fotosPreview.length > 0) {
-            this.subiendoFotos = true;
-            for (const foto of this.fotosPreview) {
-                try {
-                    // La función te devuelve el base64 puro (sin el prefijo)
-                    const base64Limpio = await comprimirImagen(foto.file, 1200, 0.7);
-                    
-                    // 🌟 REPARACIÓN AQUÍ: Le reinyectamos la cabecera que Cloudinary Java necesita
-                    const base64ListoParaBack = `data:image/jpeg;base64,${base64Limpio}`;
-                    
-                    fotosBase64.push(base64ListoParaBack);
-                } catch (err) {
-                    console.error('❌ Error al comprimir imagen:', foto.file.name, err);
-                }
+        // Usar setTimeout para que Angular renderice el spinner antes del trabajo pesado
+        setTimeout(() => {
+            // Las fotos ya están comprimidas en WebP desde processFiles (canvas.toDataURL('image/webp', 0.8))
+            // Solo extraemos los base64 ya listos (con prefijo data:image/webp;base64,...)
+            const fotosBase64: string[] = this.fotosPreview.map(f => f.compressedBase64).filter(Boolean);
+
+            // Construir payload en snake_case español como espera el backend
+            const payload: any = {
+                type: this.formData.type,
+                nro_doc_dueno: nroDoc,
+                tipo_via_prop: this.formData.tipo_via_prop,
+                direccion_prop: this.formData.direccion_prop,
+                numero_prop: this.formData.numero_prop,
+                planta_prop: this.formData.planta_prop,
+                puerta_prop: this.formData.puerta_prop,
+                cp_prop: this.formData.cp_prop,
+                provincia_prop: this.formData.provincia_prop,
+                nro_catastral_prop: this.formData.nro_catastral_prop,
+                metros_prop: this.formData.metros_prop,
+                anyo_construccion_prop: this.formData.anyo_construccion_prop,
+                antiguedad_prop: this.formData.antiguedad_prop,
+                fecha_publicacion_prop: hoy,
+                ascensor_prop: this.extrasValues['ascensor'] || false,
+                calefaccion_prop: this.extrasValues['calefaccion'] || false,
+                terraza_prop: this.extrasValues['terraza'] || false,
+                trastero_prop: this.extrasValues['trastero'] || false,
+                piscina_prop: this.extrasValues['piscina'] || false,
+                jardin_prop: this.extrasValues['jardin'] || false,
+                portero_automatico_prop: this.extrasValues['portero'] || false,
+                permite_mascotas_prop: this.extrasValues['mascotas'] || false,
+                alta_eficiencia_energetica_prop: this.extrasValues['eficiencia'] || false,
+                // Array de strings base64 con prefijo data:image/webp;base64,...
+                fotos_urls: fotosBase64.length > 0 ? fotosBase64 : null
+            };
+
+            // DEBUG: valores del formulario antes de construir payload
+            console.log('🔍 DEBUG formData.nro_habitaciones:', this.formData.nro_habitaciones, '(tipo:', typeof this.formData.nro_habitaciones, ')');
+            console.log('🔍 DEBUG formData.nro_banos:', this.formData.nro_banos, '(tipo:', typeof this.formData.nro_banos, ')');
+            console.log('🔍 DEBUG formData.type:', this.formData.type);
+
+            // Campos unificados de Propiedad (nroHabitacionesProp, nroBanosProp)
+            payload.nro_habitaciones_prop = this.formData.nro_habitaciones;
+            payload.nro_banos_prop = this.formData.nro_banos;
+
+            if (this.formData.type === 'venta') {
+                payload.descripcion_venta = this.formData.descripcion;
+                payload.precio_venta = this.formData.precio_venta;
+                payload.clase_energetica_venta = this.formData.clase_energetica_venta;
+                payload.balcon_venta = this.extrasValues['terraza'] || false;
+                payload.amueblada_venta = this.extrasValues['amueblado'] || false;
+                payload.garage_venta = this.extrasValues['garaje'] || false;
+                payload.aire_acondicionado_venta = this.extrasValues['aire_acondicionado'] || false;
+                payload.libre_cargas_venta = false;
+                payload.negociable_venta = false;
+                payload.reforma_venta = false;
+            } else {
+                payload.descripcion_alquiler = this.formData.descripcion;
+                payload.precio_alquiler = this.formData.precio_alquiler;
+                payload.fianza_alquiler = this.formData.fianza_alquiler;
+                payload.nro_personas_alquiler = this.formData.nro_personas_alquiler;
+                payload.exterior_alquiler = false;
+                payload.permite_mascotas_alquiler = this.extrasValues['mascotas'] || false;
+                payload.permite_parejas_alquiler = false;
+                payload.wifi_alquiler = false;
+                payload.permitevisitas_alquiler = false;
             }
-        }
 
-        // Construir payload en snake_case español como espera el backend
-        const payload: any = {
-            type: this.formData.type,
-            nro_doc_dueno: nroDoc,
-            tipo_via_prop: this.formData.tipo_via_prop,
-            direccion_prop: this.formData.direccion_prop,
-            numero_prop: this.formData.numero_prop,
-            planta_prop: this.formData.planta_prop,
-            puerta_prop: this.formData.puerta_prop,
-            cp_prop: this.formData.cp_prop,
-            provincia_prop: this.formData.provincia_prop,
-            nro_catastral_prop: this.formData.nro_catastral_prop,
-            metros_prop: this.formData.metros_prop,
-            anyo_construccion_prop: this.formData.anyo_construccion_prop,
-            antiguedad_prop: this.formData.antiguedad_prop,
-            fecha_publicacion_prop: hoy,
-            ascensor_prop: this.extrasValues['ascensor'] || false,
-            calefaccion_prop: this.extrasValues['calefaccion'] || false,
-            terraza_prop: this.extrasValues['terraza'] || false,
-            trastero_prop: this.extrasValues['trastero'] || false,
-            piscina_prop: this.extrasValues['piscina'] || false,
-            jardin_prop: this.extrasValues['jardin'] || false,
-            portero_automatico_prop: this.extrasValues['portero'] || false,
-            permite_mascotas_prop: this.extrasValues['mascotas'] || false,
-            alta_eficiencia_energetica_prop: this.extrasValues['eficiencia'] || false,
-            // Array con el prefijo restaurado correctamente
-            fotos_urls: fotosBase64.length > 0 ? fotosBase64 : null
-        };
+            console.log('📤 Enviando payload con', fotosBase64.length, 'fotos en WebP comprimidas');
+            console.log('🔍 DEBUG payload final:', JSON.stringify(payload, null, 2));
 
-        if (this.formData.type === 'venta') {
-            payload.nro_habitaciones_venta = this.formData.nro_habitaciones;
-            payload.nro_banos_venta = this.formData.nro_banos;
-            payload.descripcion_venta = this.formData.descripcion;
-            payload.precio_venta = this.formData.precio_venta;
-            payload.clase_energetica_venta = this.formData.clase_energetica_venta;
-            payload.balcon_venta = this.extrasValues['terraza'] || false;
-            payload.amueblada_venta = this.extrasValues['amueblado'] || false;
-            payload.garage_venta = this.extrasValues['garaje'] || false;
-            payload.aire_acondicionado_venta = this.extrasValues['aire_acondicionado'] || false;
-            payload.libre_cargas_venta = false;
-            payload.negociable_venta = false;
-            payload.reforma_venta = false;
-        } else {
-            payload.nro_habitaciones_alquiler = this.formData.nro_habitaciones;
-            payload.nro_banos_alquiler = this.formData.nro_banos;
-            payload.descripcion_alquiler = this.formData.descripcion;
-            payload.precio_alquiler = this.formData.precio_alquiler;
-            payload.fianza_alquiler = this.formData.fianza_alquiler;
-            payload.nro_personas_alquiler = this.formData.nro_personas_alquiler;
-            payload.exterior_alquiler = false;
-            payload.permite_mascotas_alquiler = this.extrasValues['mascotas'] || false;
-            payload.permite_parejas_alquiler = false;
-            payload.wifi_alquiler = false;
-            payload.permitevisitas_alquiler = false;
-        }
-
-        console.log('📤 Enviando payload a Spring Boot (con prefijos base64 en imágenes)...');
-
-        if (this.formData.type === 'venta') {
-            this.inmuebleService.crearVenta(payload).subscribe({
-                next: (response: any) => {
-                    this.loading = false;
-                    this.subiendoFotos = false;
-                    this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
-                    setTimeout(() => this.router.navigate(['/']), 1500);
-                },
-                error: (err) => {
-                    this.loading = false;
-                    this.subiendoFotos = false;
-                    console.error('❌ Error al publicar venta:', err);
-                    this.messageService.add({ severity: 'error', summary: 'Error ' + err.status, detail: 'El servidor rechazó la petición.' });
-                }
-            });
-        } else {
-            this.inmuebleService.crearAlquiler(payload).subscribe({
-                next: (response: any) => {
-                    this.loading = false;
-                    this.subiendoFotos = false;
-                    this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
-                    setTimeout(() => this.router.navigate(['/']), 1500);
-                },
-                error: (err) => {
-                    this.loading = false;
-                    this.subiendoFotos = false;
-                    console.error('❌ Error al publicar alquiler:', err);
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'No se pudo publicar el anuncio.' });
-                }
-            });
-        }
+            if (this.formData.type === 'venta') {
+                this.inmuebleService.crearVenta(payload).subscribe({
+                    next: (response: any) => {
+                        this.loading = false;
+                        this.subiendoFotos = false;
+                        this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
+                        setTimeout(() => this.router.navigate(['/']), 1500);
+                    },
+                    error: (err) => {
+                        this.loading = false;
+                        this.subiendoFotos = false;
+                        console.error('❌ Error al publicar venta:', err);
+                        this.messageService.add({ severity: 'error', summary: 'Error ' + err.status, detail: 'El servidor rechazó la petición.' });
+                    }
+                });
+            } else {
+                this.inmuebleService.crearAlquiler(payload).subscribe({
+                    next: (response: any) => {
+                        this.loading = false;
+                        this.subiendoFotos = false;
+                        this.messageService.add({ severity: 'success', summary: '¡Anuncio publicado!', detail: 'Tu inmueble ya está visible.' });
+                        setTimeout(() => this.router.navigate(['/']), 1500);
+                    },
+                    error: (err) => {
+                        this.loading = false;
+                        this.subiendoFotos = false;
+                        console.error('❌ Error al publicar alquiler:', err);
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'No se pudo publicar el anuncio.' });
+                    }
+                });
+            }
+        }, 50); // Pequeño delay para que Angular renderice el spinner
     }
 }

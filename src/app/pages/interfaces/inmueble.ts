@@ -21,9 +21,8 @@ export interface Propiedad {
     antiguedad_prop: string;
     fecha_publicacion_prop: string;
     tipo_inmueble: 'casa' | 'piso';
-    nro_habitaciones: number; // old manual field
-    nro_banos: number; // old manual field
-    nro_banos_prop?: number; // MapStruct DTO field
+    nro_habitaciones_prop: number;
+    nro_banos_prop: number;
     reformado: boolean;
     fotos: Foto[];
     type?: 'venta' | 'alquiler';
