@@ -22,23 +22,20 @@ export class Venta {
   }
 
   get fullAddress(): string {
-    return this.inmueble.direccion_fisica || 'Dirección no disponible';
+    return this.inmueble.direccion_prop || 'Dirección no disponible';
   }
 
   get mainPhoto(): string {
     if (this.inmueble.foto_principal) {
       const url = this.inmueble.foto_principal;
-      // Si la URL es relativa, añadir el base del backend
       if (url && !url.startsWith('http') && !url.startsWith('/demo')) {
         return `http://localhost:8080/tupisoya/${url.replace(/^\//, '')}`;
       }
       return url;
     }
-    // Si no hay foto_principal, intentar usar la primera foto del array
     if (this.inmueble.fotos && this.inmueble.fotos.length > 0) {
       const primeraFoto = this.inmueble.fotos[0];
       const url = typeof primeraFoto === 'string' ? primeraFoto : (primeraFoto.url_foto || '');
-
       if (url && !url.startsWith('http') && !url.startsWith('/demo')) {
         return `http://localhost:8080/tupisoya/${url.replace(/^\//, '')}`;
       }

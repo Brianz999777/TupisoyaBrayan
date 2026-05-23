@@ -13,10 +13,10 @@ import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Auth } from '../../service/auth.service';
 import { InmuebleService } from '../../service/inmueble.service';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Auth } from '../../service/auth.service';
 
 @Component({
     selector: 'app-publicaciones',
@@ -114,12 +114,12 @@ import { catchError } from 'rxjs/operators';
                                                     </div>
                                                 </div>
                                                 <div class="p-5 flex-1 flex flex-col">
-                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">{{ getDireccion(pub) }}</h3>
+                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">{{ pub.direccion_prop || 'Dirección no disponible' }}</h3>
                                                     <p class="text-xl font-black text-emerald-600 dark:text-emerald-400 mb-3">{{ pub.precio_venta | number: '1.0-0' }} €</p>
                                                     <div class="flex flex-wrap gap-3 mb-4">
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
                                                             <i class="pi pi-home text-gray-300 text-[10px]"></i>
-                                                            {{ pub.nro_habitaciones_venta || '?' }} hab.
+                                                            {{ pub.nro_habitaciones_prop || '?' }} hab.
                                                         </span>
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
                                                             <i class="pi pi-box text-gray-300 text-[10px]"></i>
@@ -185,7 +185,7 @@ import { catchError } from 'rxjs/operators';
                                                     <div class="flex flex-wrap gap-3 mb-4">
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
                                                             <i class="pi pi-home text-gray-300 text-[10px]"></i>
-                                                            {{ pub.nro_habitaciones || '?' }} hab.
+                                                            {{ pub.nro_habitaciones_prop || '?' }} hab.
                                                         </span>
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
                                                             <i class="pi pi-box text-gray-300 text-[10px]"></i>
@@ -250,7 +250,7 @@ import { catchError } from 'rxjs/operators';
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Habitaciones</label>
-                        <p-inputNumber [(ngModel)]="editForm.nro_habitaciones_venta" [min]="0" [max]="50" class="w-full" />
+                        <p-inputNumber [(ngModel)]="editForm.nro_habitaciones_prop" [min]="0" [max]="50" class="w-full" />
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Baños</label>
@@ -323,7 +323,7 @@ import { catchError } from 'rxjs/operators';
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Habitaciones</label>
-                        <p-inputNumber [(ngModel)]="editForm.nro_habitaciones" [min]="0" [max]="50" class="w-full" />
+                        <p-inputNumber [(ngModel)]="editForm.nro_habitaciones_prop" [min]="0" [max]="50" class="w-full" />
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Baños</label>
@@ -489,9 +489,20 @@ export class Publicaciones implements OnInit {
                     return of([]);
                 })
             )
-            .subscribe({
+                .subscribe({
                 next: (data) => {
                     this.ventas = data || [];
+                    if (this.ventas.length > 0) {
+                        console.log('[Publicaciones] 🏠 VENTA - 1er elemento COMPLETO:', JSON.stringify(this.ventas[0], null, 2));
+                        console.log('[Publicaciones] 🏠 VENTA - Keys del objeto:', Object.keys(this.ventas[0]));
+                        console.log('[Publicaciones] 🏠 VENTA - nro_habitaciones_prop:', this.ventas[0].nro_habitaciones_prop);
+                        console.log('[Publicaciones] 🏠 VENTA - precio_venta:', this.ventas[0].precio_venta);
+                        console.log('[Publicaciones] 🏠 VENTA - nro_banos_prop:', this.ventas[0].nro_banos_prop);
+                        console.log('[Publicaciones] 🏠 VENTA - id_prop:', this.ventas[0].id_prop);
+                        console.log('[Publicaciones] 🏠 VENTA - fotos:', this.ventas[0].fotos);
+                    } else {
+                        console.warn('[Publicaciones] ⚠️ No hay ventas en la respuesta');
+                    }
                     ventasCargadas = true;
                     verificarCompletado();
                 },
@@ -514,6 +525,12 @@ export class Publicaciones implements OnInit {
             .subscribe({
                 next: (data) => {
                     this.alquileres = data || [];
+                    if (this.alquileres.length > 0) {
+                        console.log('[Publicaciones] 🔑 ALQUILER - 1er elemento COMPLETO:', JSON.stringify(this.alquileres[0], null, 2));
+                        console.log('[Publicaciones] 🔑 ALQUILER - Keys del objeto:', Object.keys(this.alquileres[0]));
+                        console.log('[Publicaciones] 🔑 ALQUILER - nro_habitaciones_prop:', this.alquileres[0].nro_habitaciones_prop);
+                        console.log('[Publicaciones] 🔑 ALQUILER - precio_alquiler:', this.alquileres[0].precio_alquiler);
+                    }
                     alquileresCargados = true;
                     verificarCompletado();
                 },
@@ -619,8 +636,8 @@ export class Publicaciones implements OnInit {
         };
 
         if (this.editTipo === 'venta') {
-            payload.nro_habitaciones_venta = f.nro_habitaciones_venta || 0;
-            payload.nro_banos_venta = f.nro_banos_venta || f.nro_banos_prop || 0;
+            payload.nro_habitaciones_prop = f.nro_habitaciones_prop || 0;
+            payload.nro_banos_prop = f.nro_banos_prop || 0;
             payload.descripcion_venta = f.descripcion_venta || '';
             payload.precio_venta = f.precio_venta || 0;
             payload.clase_energetica_venta = f.clase_energetica_venta || '';
@@ -648,7 +665,7 @@ export class Publicaciones implements OnInit {
                 }
             });
         } else {
-            payload.nro_habitaciones = f.nro_habitaciones || 0;
+            payload.nro_habitaciones_prop = f.nro_habitaciones_prop || 0;
             payload.nro_banos_prop = f.nro_banos_prop || 0;
             payload.descripcion_alquiler = f.descripcion_alquiler || '';
             payload.precio_alquiler = f.precio_alquiler || 0;
@@ -676,13 +693,14 @@ export class Publicaciones implements OnInit {
     }
 
     confirmarEliminar(pub: any, tipo: string) {
+        const id = pub.id_prop;
         this.confirmationService.confirm({
             message: `¿Estás seguro de eliminar esta publicación de ${tipo}?`,
             header: 'Eliminar publicación',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 if (tipo === 'venta') {
-                    this.inmuebleService.deleteVenta(pub.id_prop).subscribe({
+                    this.inmuebleService.deleteVenta(id).subscribe({
                         next: () => {
                             this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Publicación eliminada correctamente.' });
                             this.cargarPublicaciones();
@@ -692,7 +710,7 @@ export class Publicaciones implements OnInit {
                         }
                     });
                 } else {
-                    this.inmuebleService.deleteAlquiler(pub.id_prop).subscribe({
+                    this.inmuebleService.deleteAlquiler(id).subscribe({
                         next: () => {
                             this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Publicación eliminada correctamente.' });
                             this.cargarPublicaciones();

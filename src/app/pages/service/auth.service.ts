@@ -67,13 +67,28 @@ export class Auth {
     return !!this.getToken();
   }
 
+  /** Limpia valores "N/A" que el backend envía para campos que no aplican (ej: persona jurídica no tiene nombre/apellidos) */
+  private sanitizeUser(user: UserDTO): UserDTO {
+    if (!user) return user;
+    // Si el nombre es "N/A" o "N/A N/A", lo dejamos vacío
+    if (user.nombre_dto && /^N\/A/i.test(user.nombre_dto.trim())) {
+      user.nombre_dto = '';
+    }
+    if (user.apellidos_dto && /^N\/A/i.test(user.apellidos_dto.trim())) {
+      user.apellidos_dto = '';
+    }
+    return user;
+  }
+
   setUser(user: UserDTO): void {
-    localStorage.setItem(this.userKey, JSON.stringify(user));
-    
+    const sanitized = this.sanitizeUser(user);
+    localStorage.setItem(this.userKey, JSON.stringify(sanitized));
   }
 
   getUser(): UserDTO | null {
     const user = localStorage.getItem(this.userKey);
-    return user ? JSON.parse(user) : null;
+    if (!user) return null;
+    const parsed: UserDTO = JSON.parse(user);
+    return this.sanitizeUser(parsed);
   }
 }

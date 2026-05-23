@@ -1,3 +1,5 @@
+<p-toast position="top-right" />
+
 <div class="max-w-[90rem] mx-auto px-8 lg:px-24 py-8">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- Panel de Filtros -->
@@ -41,3 +43,44 @@
     </div>
   </div>
 </div>
+
+<!-- ─── MODAL ALERTA ──────────────────────────────────── -->
+<p-dialog
+  header="¿Quieres recibir alertas?"
+  [(visible)]="mostrarModalAlerta"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{width: '420px'}"
+  class="alerta-dialog">
+  <div class="flex flex-col items-center text-center p-2">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-4">
+      <i class="pi pi-bell text-2xl text-white"></i>
+    </div>
+    <p class="text-gray-600 dark:text-gray-300 mb-5">
+      Te avisaremos por correo cuando haya <strong>nuevos inmuebles en venta</strong> que coincidan con tu búsqueda.
+    </p>
+    <div class="w-full flex flex-col gap-3">
+      <input
+        type="email"
+        pInputText
+        placeholder="tu@email.com"
+        class="w-full text-center"
+        [(ngModel)]="correoAlerta"
+      />
+      <button
+        pButton
+        [disabled]="guardandoAlerta"
+        (click)="crearAlerta()"
+        label="Crear alerta"
+        icon="pi pi-check"
+        class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25 !w-full"
+      ></button>
+    </div>
+    <button
+      class="mt-4 text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors font-medium"
+      (click)="cerrarModalAlerta()">
+      No, gracias
+    </button>
+  </div>
+</p-dialog>

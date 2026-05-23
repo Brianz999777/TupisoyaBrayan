@@ -23,6 +23,18 @@ export class InmuebleService {
     return this.http.get<TarjetaAlquiler[]>(`${this.baseUrl}/alquiler`);
   }
 
+  /** Búsqueda por palabra clave en alquileres */
+  buscarAlquileres(palabra: string): Observable<TarjetaAlquiler[]> {
+    console.log(`[InmuebleService] 🔍 GET buscar alquileres → ${this.baseUrl}/alquiler/busqueda/${encodeURIComponent(palabra)}`);
+    return this.http.get<TarjetaAlquiler[]>(`${this.baseUrl}/alquiler/busqueda/${encodeURIComponent(palabra)}`);
+  }
+
+  /** Búsqueda por palabra clave en ventas */
+  buscarVentas(palabra: string): Observable<TarjetaVenta[]> {
+    console.log(`[InmuebleService] 🔍 GET buscar ventas → ${this.baseUrl}/ventas/busqueda/${encodeURIComponent(palabra)}`);
+    return this.http.get<TarjetaVenta[]>(`${this.baseUrl}/ventas/busqueda/${encodeURIComponent(palabra)}`);
+  }
+
   getVentaById(id: number): Observable<PropiedadVenta> {
     console.log(`[InmuebleService] 🔍 GET venta by ID → ${this.baseUrl}/ventas/${id}`);
     return this.http.get<PropiedadVenta>(`${this.baseUrl}/ventas/${id}`);

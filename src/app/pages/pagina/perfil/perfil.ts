@@ -286,8 +286,13 @@ export class Perfil implements OnInit {
 
     getInitials(): string {
         if (!this.user) return '?';
+        // Para persona jurídica mostrar inicial del nombre de la empresa
+        // Para persona natural mostrar inicial del nombre
         const nombre = this.user.nombre_dto || '';
         const apellidos = this.user.apellidos_dto || '';
+        if (this.user.type === 'juridica') {
+            return nombre.charAt(0).toUpperCase() || '?';
+        }
         const inicialNombre = nombre.charAt(0).toUpperCase();
         const inicialApellido = apellidos.charAt(0).toUpperCase();
         return (inicialNombre + inicialApellido) || '?';
@@ -297,7 +302,13 @@ export class Perfil implements OnInit {
         if (!this.user) return 'Usuario';
         const nombre = this.user.nombre_dto || '';
         const apellidos = this.user.apellidos_dto || '';
-        return (nombre + ' ' + apellidos).trim() || 'Usuario';
+        // Para persona jurídica: si no hay nombre (porque se limpió "N/A"), mostrar el representante
+        if (this.user.type === 'juridica') {
+            return nombre || this.user.nombre_representante_juri || 'Empresa';
+        }
+        // Para persona natural: nombre + apellidos
+        const completo = (nombre + ' ' + apellidos).trim();
+        return completo || 'Usuario';
     }
 
     getEmail(): string {
@@ -339,7 +350,8 @@ export class Perfil implements OnInit {
     }
 
     getPersonType(): string {
-        return 'Persona Natural';
+        if (!this.user) return 'Persona Natural';
+        return this.user.type === 'juridica' ? 'Persona Jurídica' : 'Persona Natural';
     }
 
     getRepresentante(): string {

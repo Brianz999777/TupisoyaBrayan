@@ -1,26 +1,37 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, inject, ChangeDetectorRef, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, inject, ChangeDetectorRef, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { DataViewModule } from 'primeng/dataview';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { FormsModule } from '@angular/forms';
 import { TarjetaAlquiler } from '../../interfaces/inmueble';
 import { Alquiler } from '../alquiler/alquiler';
 import { FiltroAlquiler } from '../filtro-alquiler/filtro-alquiler';
 import { InmuebleService } from '../../service/inmueble.service';
+import { AlertaService } from '../../service/alerta.service';
+import { Auth } from '../../service/auth.service';
 
 @Component({
   selector: 'app-buqueda-alquiler',
   standalone: true,
-  imports: [CommonModule, DataViewModule, ButtonModule, Alquiler, FiltroAlquiler],
+  imports: [CommonModule, DataViewModule, ButtonModule, DialogModule, InputTextModule, ToastModule, FormsModule, Alquiler, FiltroAlquiler],
+  providers: [MessageService],
   templateUrl: './buqueda-alquiler.html',
   styleUrl: './buqueda-alquiler.scss',
 })
-export class BuquedaAlquiler implements OnInit, OnChanges {
+export class BuquedaAlquiler implements OnInit, OnChanges, OnDestroy {
   @ViewChild('filtroAlquiler') filtroAlquiler!: FiltroAlquiler;
   @Input() terminoBusquedaInput: string | null = null;
   @Output() onInmuebleSelected = new EventEmitter<{id: number, tipo: 'venta' | 'alquiler'}>();
 
   private inmuebleService = inject(InmuebleService);
+  private alertaService = inject(AlertaService);
+  private auth = inject(Auth);
+  private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   
@@ -28,6 +39,12 @@ export class BuquedaAlquiler implements OnInit, OnChanges {
   inmueblesFiltrados: TarjetaAlquiler[] = [];
   filtrosActuales: any = {};
   terminoBusqueda: string | null = null;
+
+  // Modal alerta
+  mostrarModalAlerta = false;
+  correoAlerta = '';
+  guardandoAlerta = false;
+  private timerAlerta: any = null;
 
   seleccionarInmueble(id: number) {
     this.onInmuebleSelected.emit({id, tipo: 'alquiler'});
@@ -37,17 +54,101 @@ export class BuquedaAlquiler implements OnInit, OnChanges {
     this.route.queryParams.subscribe(params => {
       if (params['q']) {
         this.terminoBusqueda = params['q'].toLowerCase();
-        this.aplicarFiltrosActuales();
+        this.cargarInmuebles();
+      } else {
+        this.terminoBusqueda = null;
+        this.cargarInmuebles();
       }
     });
+  }
 
-    this.inmuebleService.getAlquileres().subscribe({
-      next: (data) => {
-        this.inmuebles = data;
-        this.aplicarFiltrosActuales();
+  private cargarInmuebles() {
+    if (this.terminoBusqueda) {
+      // Búsqueda por palabra clave en el backend
+      this.inmuebleService.buscarAlquileres(this.terminoBusqueda).subscribe({
+        next: (data) => {
+          this.inmuebles = data;
+          this.inmueblesFiltrados = data;
+          this.iniciarTimerAlerta();
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error("Error al buscar alquileres", err)
+      });
+    } else {
+      // Sin búsqueda, cargar todos
+      this.inmuebleService.getAlquileres().subscribe({
+        next: (data) => {
+          this.inmuebles = data;
+          this.aplicarFiltrosActuales();
+          this.iniciarTimerAlerta();
+        },
+        error: (err) => console.error("Error al obtener alquileres", err)
+      });
+    }
+  }
+
+  // ─── MODAL ALERTA ───────────────────────────────────────
+  private iniciarTimerAlerta() {
+    this.pararTimerAlerta();
+    this.timerAlerta = setTimeout(() => {
+      const user = this.auth.getUser();
+      this.correoAlerta = user?.email_dto || '';
+      this.mostrarModalAlerta = true;
+      this.cdr.detectChanges();
+    }, 5000);
+  }
+
+  private pararTimerAlerta() {
+    if (this.timerAlerta) {
+      clearTimeout(this.timerAlerta);
+      this.timerAlerta = null;
+    }
+  }
+
+  cerrarModalAlerta() {
+    this.mostrarModalAlerta = false;
+    this.pararTimerAlerta();
+  }
+
+  crearAlerta() {
+    if (!this.correoAlerta.trim()) {
+      this.messageService.add({ severity: 'warn', summary: 'Correo requerido', detail: 'Introduce tu correo electrónico.' });
+      return;
+    }
+    this.guardandoAlerta = true;
+
+    // Detectar si el término de búsqueda es CP (solo dígitos) o provincia
+    let cp_alerta: string | undefined;
+    let provincia_alerta: string | undefined;
+    if (this.terminoBusqueda) {
+      if (/^\d+$/.test(this.terminoBusqueda)) {
+        cp_alerta = this.terminoBusqueda;
+      } else {
+        provincia_alerta = this.terminoBusqueda.charAt(0).toUpperCase() + this.terminoBusqueda.slice(1);
+      }
+    }
+
+    const alerta = {
+      correo_alerta: this.correoAlerta.trim(),
+      cp_alerta,
+      provincia_alerta
+    };
+    this.alertaService.crearAlerta(alerta).subscribe({
+      next: () => {
+        this.guardandoAlerta = false;
+        this.mostrarModalAlerta = false;
+        this.messageService.add({ severity: 'success', summary: '¡Alerta creada!', detail: 'Te avisaremos cuando haya nuevos inmuebles.' });
       },
-      error: (err) => console.error("Error al obtener alquileres", err)
+      error: (err) => {
+        this.guardandoAlerta = false;
+        console.error('Error al crear alerta:', err);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear la alerta.' });
+      }
     });
+  }
+
+  ngOnDestroy() {
+    this.pararTimerAlerta();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -73,14 +174,15 @@ export class BuquedaAlquiler implements OnInit, OnChanges {
     this.inmueblesFiltrados = this.inmuebles.filter(inm => {
       let cumple = true;
 
-      // Filtro de Búsqueda General (Provincia, CP, Dirección)
+      // Filtro de Búsqueda General (Población, Provincia, CP, Dirección)
       if (this.terminoBusqueda) {
         const busqueda = this.terminoBusqueda;
+        const poblacion = (inm.poblacion_prop || '').toLowerCase();
         const provincia = (inm.provincia_prop || '').toLowerCase();
         const cp = (inm.cp_prop || '').toLowerCase();
-        const direccion = (inm.direccion_fisica || '').toLowerCase();
+        const direccion = (inm.direccion_prop || '').toLowerCase();
         
-        if (!provincia.includes(busqueda) && !cp.includes(busqueda) && !direccion.includes(busqueda)) {
+        if (!poblacion.includes(busqueda) && !provincia.includes(busqueda) && !cp.includes(busqueda) && !direccion.includes(busqueda)) {
           cumple = false;
         }
       }
@@ -96,8 +198,8 @@ export class BuquedaAlquiler implements OnInit, OnChanges {
       // Filtro Habitaciones (Checkbox)
       if (filtros.habitaciones && filtros.habitaciones.length > 0) {
         const matches = filtros.habitaciones.some((h: number) => {
-          if (h === 4) return (inm.nro_habitaciones ?? 0) >= 4;
-          return inm.nro_habitaciones === h;
+          if (h === 4) return (inm.nro_habitaciones_prop ?? 0) >= 4;
+          return inm.nro_habitaciones_prop === h;
         });
         if (!matches) cumple = false;
       }
@@ -105,19 +207,10 @@ export class BuquedaAlquiler implements OnInit, OnChanges {
       // Filtro Baños (Checkbox)
       if (filtros.banos && filtros.banos.length > 0) {
         const matches = filtros.banos.some((b: number) => {
-          if (b === 3) return (inm.nro_banos ?? 0) >= 3;
-          return inm.nro_banos === b;
+          if (b === 3) return (inm.nro_banos_prop ?? 0) >= 3;
+          return inm.nro_banos_prop === b;
         });
         if (!matches) cumple = false;
-      }
-
-      // Filtro Estado
-      if (filtros.estado) {
-        const esReformado = inm.reformado === true;
-        if (inm.reformado !== undefined) {
-          if (filtros.estado === 'reformado' && !esReformado) cumple = false;
-          if (filtros.estado === 'a_reformar' && esReformado) cumple = false;
-        }
       }
 
       return cumple;

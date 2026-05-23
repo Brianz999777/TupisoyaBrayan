@@ -22,7 +22,7 @@ export class Alquiler {
   }
 
   get fullAddress(): string {
-    return this.inmueble.direccion_fisica || 'Dirección no disponible';
+    return this.inmueble.direccion_prop || 'Dirección no disponible';
   }
 
   get mainPhoto(): string {

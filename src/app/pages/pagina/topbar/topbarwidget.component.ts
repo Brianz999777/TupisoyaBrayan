@@ -55,7 +55,10 @@ import { Auth } from '../../service/auth.service';
                         <div (click)="router.navigate(['/perfil'])"
                             class="flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700 bg-gray-100/70 hover:bg-gray-200/70 dark:bg-gray-800/70 dark:hover:bg-gray-700 shadow-sm transition-all duration-300 cursor-pointer group">
                             <span class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">
-                                {{ user?.apellidos_dto || user?.email_dto || 'Usuario' }}
+                                {{ user?.nombre_dto || user?.email_dto || 'Usuario' }}
+                                @if (user?.type === 'juridica') {
+                                    <span class="text-xs text-gray-400 dark:text-gray-500 ml-1">(Empresa)</span>
+                                }
                             </span>
                             <p-avatar [label]="getInitials()" size="normal" shape="circle"
                                 [style]="{ 'background': 'linear-gradient(135deg, #34d399, #14b8a6)', 'color': '#fff', 'font-weight': '700', 'width': '32px', 'height': '32px', 'font-size': '0.8rem' }">
@@ -113,7 +116,7 @@ export class TopbarWidget implements OnInit {
 
     getInitials(): string {
         if (!this.user) return '?';
-        const apellidos = this.user.apellidos_dto || '';
-        return apellidos.charAt(0).toUpperCase() || '?';
+        const nombre = this.user.nombre_dto || '';
+        return nombre.charAt(0).toUpperCase() || '?';
     }
 }
