@@ -6,21 +6,13 @@ export interface Persona {
   foto_dto: string | null;
 }
 
-export interface PropiedadSimplificada {
-  id_prop: number;
-  direccion_prop: string;
-  provincia_prop: string;
-  tipo_via_prop: string;
-  foto_principal: string;
-  tipo_inmueble: string;
-}
-
 export interface SalaChat {
   id_sala: number;
-  propiedad: PropiedadSimplificada;
-  comprador: Persona;
-  vendedor: Persona;
+  id_prop: number;
+  nro_doc_comprador: string;
+  nro_doc_vendedor: string;
   fecha_creacion: string;
+  no_leidos?: number;
 }
 
 export interface MensajeChat {

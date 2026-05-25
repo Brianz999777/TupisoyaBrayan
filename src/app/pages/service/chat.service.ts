@@ -17,6 +17,13 @@ export class ChatService {
   private mensaje_source = new BehaviorSubject<MensajeChat | null>(null);
   public nuevo_mensaje$ = this.mensaje_source.asObservable();
 
+  /** Total de mensajes no leídos en todas las salas (para el badge del topbar) */
+  private total_no_leidos_source = new BehaviorSubject<number>(0);
+  public total_no_leidos$ = this.total_no_leidos_source.asObservable();
+
+  /** Mapa: id_sala -> cantidad de mensajes no leídos */
+  private no_leidos_por_sala: Map<number, number> = new Map();
+
   private verificar_autenticacion(): boolean {
     const token = this.auth.getToken();
     if (!token) return false;
@@ -58,8 +65,8 @@ export class ChatService {
   }
 
   suscribirse_a_sala(id_sala: number): void {
-    this.wsService.suscribirse(`/topic/sala/${id_sala}`, (mensaje: MensajeChat) => {
-      this.mensaje_source.next(mensaje);
+    this.wsService.suscribirse(`/topic/sala/${id_sala}`, (mensaje: any) => {
+      this.mensaje_source.next(mensaje as MensajeChat);
     });
   }
 
@@ -76,5 +83,48 @@ export class ChatService {
 
   desconectar_websocket(): void {
     this.wsService.desconectar();
+  }
+
+  esta_conectado_ws(): boolean {
+    return this.wsService.esta_conectado();
+  }
+
+  // ========== GESTIÓN DE MENSAJES NO LEÍDOS ==========
+
+  /** Incrementa el contador de no leídos para una sala específica */
+  incrementar_no_leidos(id_sala: number): void {
+    const actual = this.no_leidos_por_sala.get(id_sala) || 0;
+    this.no_leidos_por_sala.set(id_sala, actual + 1);
+    this.actualizar_total_no_leidos();
+  }
+
+  /** Marca una sala como leída (cuando el usuario entra al chat) */
+  marcar_sala_como_leida(id_sala: number): void {
+    this.no_leidos_por_sala.set(id_sala, 0);
+    this.actualizar_total_no_leidos();
+  }
+
+  /** Obtiene los no leídos de una sala específica */
+  obtener_no_leidos_sala(id_sala: number): number {
+    return this.no_leidos_por_sala.get(id_sala) || 0;
+  }
+
+  /** Inicializa los contadores desde la lista de chats (el backend devuelve no_leidos) */
+  inicializar_no_leidos(chats: SalaChat[]): void {
+    this.no_leidos_por_sala.clear();
+    for (const chat of chats) {
+      if (chat.no_leidos && chat.no_leidos > 0) {
+        this.no_leidos_por_sala.set(chat.id_sala, chat.no_leidos);
+      }
+    }
+    this.actualizar_total_no_leidos();
+  }
+
+  private actualizar_total_no_leidos(): void {
+    let total = 0;
+    this.no_leidos_por_sala.forEach((cantidad) => {
+      total += cantidad;
+    });
+    this.total_no_leidos_source.next(total);
   }
 }

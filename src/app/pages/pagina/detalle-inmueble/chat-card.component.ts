@@ -297,7 +297,7 @@ export class ChatCard implements OnInit, OnDestroy, OnChanges {
       contenido: texto
     };
 
-    if (this.chatService['wsService'].esta_conectado()) {
+    if (this.chatService.esta_conectado_ws()) {
       this.chatService.enviar_mensaje_ws(mensaje_ws);
       this.texto_input.set('');
       this.enviando.set(false);

@@ -279,6 +279,10 @@ export class Perfil implements OnInit {
         this.router.navigate(['/publicaciones']);
     }
 
+    goToMensajes() {
+        this.router.navigate(['/mensajes']);
+    }
+
     logout() {
         this.authService.logout();
         this.router.navigate(['/login']);

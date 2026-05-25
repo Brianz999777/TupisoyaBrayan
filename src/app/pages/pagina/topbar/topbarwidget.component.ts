@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
@@ -6,8 +6,11 @@ import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
+import { BadgeModule } from 'primeng/badge';
+import { Subscription } from 'rxjs';
 import { UserDTO } from '../../interfaces/user-dto';
 import { Auth } from '../../service/auth.service';
+import { ChatService } from '../../service/chat.service';
 
 @Component({
     selector: 'topbar-widget',
@@ -19,7 +22,8 @@ import { Auth } from '../../service/auth.service';
         ButtonModule,
         RippleModule,
         AvatarModule,
-        TooltipModule
+        TooltipModule,
+        BadgeModule
     ],
     template: `
         <nav [ngClass]="!isScrolled ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-md py-4 border-b border-gray-100 dark:border-gray-800' : 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-lg shadow-lg border-b border-gray-200/50 dark:border-gray-800/50 py-3'"
@@ -52,6 +56,18 @@ import { Auth } from '../../service/auth.service';
                 <!-- Actions -->
                 <div class="flex items-center gap-3">
                     @if (isLoggedIn) {
+                        <!-- Botón de mensajes con badge -->
+                        <div (click)="router.navigate(['/mensajes'])"
+                            class="relative w-10 h-10 rounded-full bg-gray-100/70 dark:bg-gray-800/70 hover:bg-gray-200/70 dark:hover:bg-gray-700 flex items-center justify-center cursor-pointer transition-all shadow-sm border border-gray-200/50 dark:border-gray-700"
+                            pTooltip="Mensajes" tooltipPosition="bottom">
+                            <i class="pi pi-comments text-gray-600 dark:text-gray-300 text-lg"></i>
+                            @if (total_no_leidos > 0) {
+                                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-red-500/30 animate-pulse">
+                                    {{ total_no_leidos > 99 ? '99+' : total_no_leidos }}
+                                </span>
+                            }
+                        </div>
+
                         <div (click)="router.navigate(['/perfil'])"
                             class="flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700 bg-gray-100/70 hover:bg-gray-200/70 dark:bg-gray-800/70 dark:hover:bg-gray-700 shadow-sm transition-all duration-300 cursor-pointer group">
                             <span class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">
@@ -90,14 +106,17 @@ import { Auth } from '../../service/auth.service';
         </nav>
     `
 })
-export class TopbarWidget implements OnInit {
+export class TopbarWidget implements OnInit, OnDestroy {
     isLoggedIn = false;
     user: UserDTO | null = null;
     isScrolled = false;
+    total_no_leidos = 0;
+    private suscripcion_no_leidos: Subscription | null = null;
 
     constructor(
         public router: Router,
-        private authService: Auth
+        private authService: Auth,
+        private chatService: ChatService
     ) {}
 
     @HostListener('window:scroll', [])
@@ -108,6 +127,20 @@ export class TopbarWidget implements OnInit {
     ngOnInit() {
         this.isLoggedIn = this.authService.isLoggedIn();
         this.user = this.authService.getUser();
+
+        // Suscribirse al contador de mensajes no leídos
+        if (this.isLoggedIn) {
+            this.chatService.conectar_websocket();
+            this.suscripcion_no_leidos = this.chatService.total_no_leidos$.subscribe(total => {
+                this.total_no_leidos = total;
+            });
+        }
+    }
+
+    ngOnDestroy() {
+        if (this.suscripcion_no_leidos) {
+            this.suscripcion_no_leidos.unsubscribe();
+        }
     }
 
     goToLanding() {

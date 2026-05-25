@@ -1,0 +1,198 @@
+<div class="min-h-screen flex flex-col bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+  <topbar-widget class="py-6 px-6 lg:px-20 flex items-center justify-between relative lg:static" />
+
+  <section class="relative pt-32 pb-20 flex-1">
+    <div class="max-w-[120rem] mx-auto px-8 lg:px-32">
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50">
+          <i class="pi pi-comments text-white text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-black text-gray-900 dark:text-white">Mis Mensajes</h1>
+          <p class="text-sm text-gray-400">Todas tus conversaciones en un solo lugar</p>
+        </div>
+      </div>
+
+      @if (!auth.getToken()) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="pi pi-lock text-3xl text-gray-400"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Inicia sesión</h2>
+          <p class="text-gray-400 mb-6">Debes iniciar sesión para ver tus mensajes</p>
+          <button pButton label="Iniciar sesión" icon="pi pi-sign-in" routerLink="/login"
+            class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-8 !py-3"></button>
+        </div>
+      } @else if (cargando_chats()) {
+        <div class="flex items-center justify-center py-20">
+          <i class="pi pi-spin pi-spinner text-4xl text-emerald-400"></i>
+        </div>
+      } @else if (chats_con_datos().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="pi pi-inbox text-3xl text-gray-400"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No tienes conversaciones</h2>
+          <p class="text-gray-400">Cuando contactes con un anunciante o alguien te escriba, los chats aparecerán aquí</p>
+        </div>
+      } @else {
+        <div class="chat-grid">
+          <!-- Lista de chats -->
+          <div class="chat-list">
+            <div class="chat-list-header">
+              <p class="text-sm font-bold text-gray-900 dark:text-white">Conversaciones</p>
+              <p class="text-xs text-gray-400">{{ chats_con_datos().length }} chat{{ chats_con_datos().length !== 1 ? 's' : '' }}</p>
+            </div>
+            <div class="chat-list-body">
+              @for (item of chats_con_datos(); track item.sala.id_sala) {
+                <div
+                  class="chat-list-item"
+                  [ngClass]="{
+                    'chat-list-item--active': sala_seleccionada()?.sala?.id_sala === item.sala.id_sala
+                  }"
+                  (click)="seleccionar_chat(item)"
+                >
+                  <div class="chat-avatar-wrapper">
+                    <div class="chat-avatar">
+                      {{ obtener_iniciales(item.otro_usuario) }}
+                    </div>
+                    @if (chatService.obtener_no_leidos_sala(item.sala.id_sala) > 0) {
+                      <span class="chat-badge">
+                        {{ chatService.obtener_no_leidos_sala(item.sala.id_sala) > 9 ? '9+' : chatService.obtener_no_leidos_sala(item.sala.id_sala) }}
+                      </span>
+                    }
+                  </div>
+                  <div class="chat-list-item-info">
+                    <p class="chat-list-item-name">
+                      {{ obtener_nombre(item.otro_usuario) }}
+                      @if (chatService.obtener_no_leidos_sala(item.sala.id_sala) > 0) {
+                        <span class="chat-dot"></span>
+                      }
+                    </p>
+                    <p class="chat-list-item-address">
+                      {{ item.propiedad?.direccion_prop || 'Cargando...' }}
+                    </p>
+                  </div>
+                  <i class="pi pi-chevron-right text-gray-300 text-xs"></i>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Chat activo -->
+          <div class="chat-main">
+            @if (!sala_seleccionada()) {
+              <div class="chat-empty">
+                <div class="chat-empty-icon">
+                  <i class="pi pi-comment text-4xl text-emerald-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Selecciona un chat</h3>
+                <p class="text-sm text-gray-400 max-w-sm">Elige una conversación de la lista para empezar a chatear</p>
+              </div>
+            } @else {
+              @let sala_actual = sala_seleccionada()!;
+              <!-- Header del chat -->
+              <div class="chat-header">
+                <div class="chat-header-user">
+                  <div class="chat-avatar">
+                    {{ obtener_iniciales(sala_actual.otro_usuario) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="chat-header-name">
+                      {{ obtener_nombre(sala_actual.otro_usuario) }}
+                    </p>
+                    <p class="chat-header-email">
+                      {{ sala_actual.otro_usuario?.email_dto || '' }}
+                    </p>
+                  </div>
+                </div>
+                <!-- Banner de propiedad -->
+                @if (sala_actual.propiedad) {
+                  <div (click)="ir_a_propiedad(sala_actual.sala.id_prop)" class="property-banner">
+                    <div class="property-banner-image">
+                      @if (obtener_foto_principal(sala_actual.propiedad)) {
+                        <img [src]="obtener_foto_principal(sala_actual.propiedad)" alt="Propiedad"
+                          class="w-full h-full object-cover" onerror="this.style.display='none'">
+                      } @else {
+                        <div class="w-full h-full flex items-center justify-center">
+                          <i class="pi pi-home text-gray-300 text-xl"></i>
+                        </div>
+                      }
+                    </div>
+                    <div class="property-banner-info">
+                      <p class="property-banner-address">
+                        {{ sala_actual.propiedad.direccion_prop || 'Propiedad' }}
+                      </p>
+                      <p class="property-banner-location">
+                        {{ sala_actual.propiedad.tipo_via_prop || '' }}{{ sala_actual.propiedad.provincia_prop ? ' · ' + sala_actual.propiedad.provincia_prop : '' }}
+                      </p>
+                    </div>
+                    <div class="property-banner-icon">
+                      <i class="pi pi-external-link"></i>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Mensajes -->
+              <div class="chat-messages" #scrollContainer>
+                @if (cargando_mensajes()) {
+                  <div class="flex items-center justify-center h-full">
+                    <i class="pi pi-spin pi-spinner text-3xl text-emerald-400"></i>
+                  </div>
+                } @else if (mensajes().length === 0) {
+                  <div class="chat-messages-empty">
+                    <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
+                      <i class="pi pi-send text-2xl text-gray-300"></i>
+                    </div>
+                    <p class="text-sm text-gray-400">No hay mensajes aún</p>
+                    <p class="text-xs text-gray-300 mt-1">¡Escribe el primer mensaje!</p>
+                  </div>
+                } @else {
+                  @for (msg of mensajes(); track msg.id_mensaje || $index) {
+                    <div class="message-row" [ngClass]="{'message-row--sent': msg.emisor_email === email_usuario(), 'message-row--received': msg.emisor_email !== email_usuario()}">
+                      <div class="message-bubble" [ngClass]="{'message-bubble--sent': msg.emisor_email === email_usuario(), 'message-bubble--received': msg.emisor_email !== email_usuario()}">
+                        <p class="message-text">{{ msg.contenido }}</p>
+                        <div class="message-time">
+                          <span>{{ msg.fecha_envio ? (msg.fecha_envio | date:'HH:mm') : '' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+
+              <!-- Input -->
+              <div class="chat-input">
+                <div class="chat-input-container">
+                  <input
+                    type="text"
+                    pInputText
+                    [ngModel]="texto_input()"
+                    (ngModelChange)="texto_input.set($event)"
+                    (keyup.enter)="enviar_mensaje()"
+                    placeholder="Escribe un mensaje..."
+                    maxlength="1000"
+                    class="chat-input-field"
+                  />
+                  <button
+                    pButton
+                    icon="pi pi-send"
+                    [disabled]="!texto_input().trim() || enviando()"
+                    (click)="enviar_mensaje()"
+                    class="chat-input-button"
+                  ></button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <app-footer-widget class="mt-auto" />
+</div>
+
+<p-toast position="top-right" />

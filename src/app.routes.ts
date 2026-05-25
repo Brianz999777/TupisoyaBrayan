@@ -14,6 +14,7 @@ import { Landing } from './app/pages/landing/landing';
 import { Nosotros } from './app/pages/pagina/nosotros/nosotros';
 import { Servicios } from './app/pages/pagina/servicios/servicios';
 import { Contacto } from './app/pages/pagina/contacto/contacto';
+import { Mensajes } from './app/pages/pagina/mensajes/mensajes';
 
 export const appRoutes: Routes = [
     {
@@ -25,11 +26,11 @@ export const appRoutes: Routes = [
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'busqueda-venta', component: BuquedaVenta },
-            { path: 'busqueda-alquiler', component: BuquedaAlquiler },
-            { path: 'detalle-venta/:id', component: DetalleInmueble },
-            { path: 'detalle-alquiler/:id', component: DetalleInmueble }
+            { path: 'busqueda-alquiler', component: BuquedaAlquiler }
         ]
     },
+    { path: 'detalle-venta/:id', component: DetalleInmueble },
+    { path: 'detalle-alquiler/:id', component: DetalleInmueble },
     { path: 'perfil', component: Perfil },
     { path: 'publicaciones', component: Publicaciones },
     { path: 'publicar-anuncio', component: PublicarAnuncio },
@@ -41,5 +42,6 @@ export const appRoutes: Routes = [
     { path: 'notfound', component: Notfound },
     { path: 'register', component: Register },
     { path: 'login', component: LogIn },
+    { path: 'mensajes', component: Mensajes },
     { path: '**', redirectTo: '/notfound' }
 ];
