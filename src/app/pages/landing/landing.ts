@@ -12,11 +12,12 @@ import { FooterWidget } from './components/footerwidget';
 import { BuquedaAlquiler } from '../pagina/buqueda-alquiler/buqueda-alquiler';
 import { BuquedaVenta } from '../pagina/buqueda-venta/buqueda-venta';
 import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
+import { MapaBusqueda } from '../pagina/mapa-busqueda/mapa-busqueda';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [CommonModule, FormsModule, HttpClientModule, TopbarWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, InputTextModule, BuquedaVenta, BuquedaAlquiler, DetalleInmueble],
+    imports: [CommonModule, FormsModule, HttpClientModule, TopbarWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, InputTextModule, BuquedaVenta, BuquedaAlquiler, DetalleInmueble, MapaBusqueda],
     template: `
         <div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
             <topbar-widget [isHero]="!buscando && !verDetalleActivo" />
@@ -35,7 +36,7 @@ import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
 
                         <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-[1.05] tracking-tight">
                             Encuentra tu
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">hogar ideal</span>
+                            <span class="text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">hogar ideal</span>
                         </h1>
                         <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-12 leading-relaxed">Descubre la propiedad perfecta en Zaragoza con nuestra tecnología inteligente. Compra, alquila o vende de forma fácil y segura.</p>
 
@@ -80,13 +81,22 @@ import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
                                     />
                                 </div>
 
-                                <button
-                                    (click)="ejecutarBusqueda()"
-                                    class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 whitespace-nowrap"
-                                >
-                                    <i class="pi pi-search"></i>
-                                    <span>Buscar</span>
-                                </button>
+                                <div class="flex gap-2">
+                                    <button
+                                        (click)="ejecutarBusqueda()"
+                                        class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 whitespace-nowrap"
+                                    >
+                                        <i class="pi pi-search"></i>
+                                        <span>Buscar</span>
+                                    </button>
+                                    <button
+                                        (click)="scrollToMapa()"
+                                        class="px-6 py-3.5 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/25 flex items-center gap-2 whitespace-nowrap"
+                                    >
+                                        <i class="pi pi-map"></i>
+                                        <span>Mapa</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -106,6 +116,18 @@ import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
                                 <div class="text-3xl font-bold text-white">98%</div>
                                 <div class="text-sm text-gray-300 mt-1">Satisfacción</div>
                             </div>
+                        </div>
+
+                        <!-- Tasador CTA -->
+                        <div class="mt-10">
+                            <button
+                                (click)="openValuationModal()"
+                                class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold rounded-2xl transition-all shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/40 text-lg animate-pulse hover:animate-none"
+                            >
+                                <i class="pi pi-chart-line text-xl"></i>
+                                <span>¿Cuánto vale tu casa? Tásala gratis</span>
+                                <i class="pi pi-arrow-right text-sm"></i>
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -143,6 +165,23 @@ import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Transacciones Seguras</h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Cada anuncio es verificado. Te acompañamos en todo el proceso para garantizar una experiencia 100% segura y sin sorpresas.</p>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══ MAPA BÚSQUEDA POR ZONA ═══ -->
+                <section class="py-24">
+                    <div class="max-w-[120rem] mx-auto px-8 lg:px-32">
+                        <div class="text-center mb-12">
+                            <span class="text-sm font-semibold text-emerald-500 uppercase tracking-wider">Búsqueda geográfica</span>
+                            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mt-3">Encuentra inmuebles dibujando en el mapa</h2>
+                            <p class="text-gray-500 dark:text-gray-400 mt-3 max-w-2xl mx-auto">
+                                Selecciona una zona en el mapa dibujando un polígono y descubre todas las propiedades disponibles en esa área.
+                                Como en Idealista, pero más inteligente.
+                            </p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <app-mapa-busqueda />
                         </div>
                     </div>
                 </section>
@@ -603,6 +642,19 @@ export class Landing implements OnInit {
 
     volver() {
         this.verDetalleActivo = false;
+    }
+
+    scrollToMapa() {
+        // Buscar la sección del mapa y hacer scroll suave
+        const secciones = document.querySelectorAll('section');
+        // La sección del mapa es la 3ª (Hero=0, Features=1, Mapa=2)
+        for (const section of secciones) {
+            const heading = section.querySelector('h2');
+            if (heading && heading.textContent?.includes('dibujando en el mapa')) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                break;
+            }
+        }
     }
 
     openValuationModal() {

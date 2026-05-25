@@ -29,15 +29,19 @@ import { finalize } from 'rxjs';
   ],
   providers: [MessageService],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 relative overflow-hidden p-4">
-      <!-- Background decoration -->
+    <div class="min-h-screen flex items-center justify-center relative overflow-hidden p-4">
+      <!-- Background image -->
+      <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/demo/images/galleria/portada.jpg');"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+      
+      <!-- Decorative elements -->
       <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute w-[500px] h-[500px] bg-emerald-200/20 dark:bg-emerald-500/5 rounded-full blur-3xl -top-32 -right-32"></div>
-        <div class="absolute w-[400px] h-[400px] bg-teal-200/20 dark:bg-teal-500/5 rounded-full blur-3xl -bottom-32 -left-32"></div>
+        <div class="absolute w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl -top-48 -right-48"></div>
+        <div class="absolute w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-3xl -bottom-48 -left-48"></div>
       </div>
 
       <div class="relative z-10 w-full max-w-[420px]">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-xl shadow-emerald-500/5 border border-gray-100 dark:border-gray-700">
+        <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-8 md:p-10 shadow-2xl shadow-black/20 border border-white/20 dark:border-gray-700">
           <!-- Logo -->
           <div class="flex items-center justify-center gap-3 mb-8">
             <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">

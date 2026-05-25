@@ -42,13 +42,26 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
       const isLoginRequest = req.url.includes('/auth/login');
+      const errorMessage = error.error?.message || error.error || '';
       
+      // 401 → Token inválido/expirado → logout + login
       if (error.status === 401 && !isLoginRequest) {
         console.warn('[AuthInterceptor] Token inválido/expirado (401). Redirigiendo al login...');
         authService.logout();
         router.navigate(['/login']);
-      } else if (error.status === 403 && !isLoginRequest) {
+      }
+      // 403 → Acceso denegado
+      else if (error.status === 403 && !isLoginRequest) {
         console.warn('[AuthInterceptor] Acceso denegado (403) a:', req.url);
+        authService.logout();
+        router.navigate(['/login']);
+      }
+      // 500 con "Usuario no encontrado" → el backend no tradujo la excepción a 401
+      else if (error.status === 500 && !isLoginRequest && 
+               (typeof errorMessage === 'string' && errorMessage.includes('Usuario no encontrado'))) {
+        console.warn('[AuthInterceptor] Usuario no encontrado (500). Token inválido. Redirigiendo al login...');
+        authService.logout();
+        router.navigate(['/login']);
       }
       
       return throwError(() => error);

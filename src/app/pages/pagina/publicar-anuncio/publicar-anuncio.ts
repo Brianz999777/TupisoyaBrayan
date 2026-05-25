@@ -184,6 +184,10 @@ interface ExtraItem {
                                                 <input type="text" [(ngModel)]="formData.provincia_prop" placeholder="Ej: Valencia" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-900 dark:text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-gray-700 placeholder:text-gray-400" />
                                             </div>
                                             <div class="flex flex-col gap-1.5">
+                                                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Población / Ciudad *</label>
+                                                <input type="text" [(ngModel)]="formData.poblacion_prop" placeholder="Ej: Valencia, Alicante..." class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-900 dark:text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-gray-700 placeholder:text-gray-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-1.5">
                                                 <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nº Catastral *</label>
                                                 <input type="text" [(ngModel)]="formData.nro_catastral_prop" placeholder="Ej: VENTA99998888" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-900 dark:text-white outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-gray-700 placeholder:text-gray-400" />
                                             </div>
@@ -359,6 +363,10 @@ interface ExtraItem {
                                                         <span class="text-base font-black text-gray-900 dark:text-white">{{ formData.direccion_prop }}, {{ formData.numero_prop }}</span>
                                                     </div>
                                                     <div class="flex flex-col gap-0.5">
+                                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Población</span>
+                                                        <span class="text-base font-black text-gray-900 dark:text-white">{{ formData.poblacion_prop }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col gap-0.5">
                                                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Provincia</span>
                                                         <span class="text-base font-black text-gray-900 dark:text-white">{{ formData.provincia_prop }}</span>
                                                     </div>
@@ -495,6 +503,7 @@ export class PublicarAnuncio implements OnInit {
         puerta_prop: '',
         cp_prop: '',
         provincia_prop: '',
+        poblacion_prop: '',
         nro_catastral_prop: '',
         metros_prop: null,
         anyo_construccion_prop: null,
@@ -670,7 +679,7 @@ export class PublicarAnuncio implements OnInit {
             return;
         }
         if (this.pasoActual === 2) {
-            if (!this.formData.tipo_via_prop || !this.formData.direccion_prop || !this.formData.numero_prop || !this.formData.cp_prop || !this.formData.provincia_prop || !this.formData.nro_catastral_prop || !this.formData.metros_prop || !this.formData.anyo_construccion_prop || !this.formData.nro_habitaciones || !this.formData.nro_banos) {
+            if (!this.formData.tipo_via_prop || !this.formData.direccion_prop || !this.formData.numero_prop || !this.formData.cp_prop || !this.formData.provincia_prop || !this.formData.poblacion_prop || !this.formData.nro_catastral_prop || !this.formData.metros_prop || !this.formData.anyo_construccion_prop || !this.formData.nro_habitaciones || !this.formData.nro_banos) {
                 this.messageService.add({ severity: 'warn', summary: 'Campos incompletos', detail: 'Completa todos los campos obligatorios.' });
                 return;
             }
@@ -698,7 +707,7 @@ export class PublicarAnuncio implements OnInit {
             ? this.formData.precio_venta + ' €'
             : this.formData.precio_alquiler + ' €/mes';
         this.confirmationService.confirm({
-            message: `¿Estás seguro de que quieres publicar este anuncio de <strong>${tipo}</strong> por <strong>${precio}</strong>?<br><br>Dirección: ${this.formData.direccion_prop}, ${this.formData.numero_prop}<br>${this.fotosPreview.length} foto(s) adjunta(s).`,
+            message: `¿Estás seguro de que quieres publicar este anuncio de <strong>${tipo}</strong> por <strong>${precio}</strong>?<br><br>Dirección: ${this.formData.direccion_prop}, ${this.formData.numero_prop}<br>Población: ${this.formData.poblacion_prop}<br>${this.fotosPreview.length} foto(s) adjunta(s).`,
             header: 'Confirmar publicación',
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Sí, publicar',
@@ -742,6 +751,7 @@ export class PublicarAnuncio implements OnInit {
                 puerta_prop: this.formData.puerta_prop,
                 cp_prop: this.formData.cp_prop,
                 provincia_prop: this.formData.provincia_prop,
+                poblacion_prop: this.formData.poblacion_prop,
                 nro_catastral_prop: this.formData.nro_catastral_prop,
                 metros_prop: this.formData.metros_prop,
                 anyo_construccion_prop: this.formData.anyo_construccion_prop,

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { PropiedadVenta, PropiedadAlquiler, InmuebleVentaDto, TarjetaVenta, TarjetaAlquiler } from '../interfaces/inmueble';
 import { ContactoInmuebleDTO } from '../interfaces/contacto-inmueble';
 import { Persona } from '../interfaces/chat.model';
+import { BusquedaZonaDTO, PropiedadVentaCardDTO } from '../interfaces/busqueda-zona';
 
 @Injectable({
   providedIn: 'root'
@@ -125,5 +126,15 @@ export class InmuebleService {
   buscarArrendatario(idProp: number): Observable<Persona> {
     console.log(`[InmuebleService] 👤 GET buscarArrendatario → ${this.baseUrl}/alquiler/busqueda-arrendatario/${idProp}`);
     return this.http.get<Persona>(`${this.baseUrl}/alquiler/busqueda-arrendatario/${idProp}`);
+  }
+
+  /**
+   * Busca propiedades en venta dentro de un polígono geográfico.
+   * Endpoint: POST /inmuebles/ventas/buscar-por-zona
+   * Body: { poligono: "POLYGON((lng1 lat1, lng2 lat2, ...))" }
+   */
+  buscarVentasPorZona(dto: BusquedaZonaDTO): Observable<PropiedadVentaCardDTO[]> {
+    console.log(`[InmuebleService] 🗺️ POST buscarVentasPorZona → ${this.baseUrl}/ventas/buscar-por-zona`, dto);
+    return this.http.post<PropiedadVentaCardDTO[]>(`${this.baseUrl}/ventas/buscar-por-zona`, dto);
   }
 }

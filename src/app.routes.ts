@@ -15,6 +15,7 @@ import { Nosotros } from './app/pages/pagina/nosotros/nosotros';
 import { Servicios } from './app/pages/pagina/servicios/servicios';
 import { Contacto } from './app/pages/pagina/contacto/contacto';
 import { Mensajes } from './app/pages/pagina/mensajes/mensajes';
+import { MapaBusqueda } from './app/pages/pagina/mapa-busqueda/mapa-busqueda';
 
 export const appRoutes: Routes = [
     {
@@ -26,7 +27,8 @@ export const appRoutes: Routes = [
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'busqueda-venta', component: BuquedaVenta },
-            { path: 'busqueda-alquiler', component: BuquedaAlquiler }
+            { path: 'busqueda-alquiler', component: BuquedaAlquiler },
+            { path: 'mapa-busqueda', component: MapaBusqueda }
         ]
     },
     { path: 'detalle-venta/:id', component: DetalleInmueble },

@@ -1,0 +1,63 @@
+<div class="mapa-busqueda-container">
+  <div class="mapa-header">
+    <h2>🔍 Buscar inmuebles por zona</h2>
+    <p class="mapa-subtitle">
+      Dibuja un polígono en el mapa para buscar propiedades dentro del área seleccionada.
+      Usa la herramienta <strong>Polígono</strong> del panel de control.
+    </p>
+  </div>
+
+  <div id="mapaLeaflet" class="mapa-leaflet"></div>
+
+  <!-- Overlay de carga mientras se realiza la petición -->
+  @if (cargando) {
+    <div class="mapa-loading-overlay">
+      <div class="spinner"></div>
+      <span>Buscando inmuebles en la zona...</span>
+    </div>
+  }
+
+  <!-- Resultados -->
+  @if (resultados.length > 0) {
+    <div class="mapa-resultados">
+      <h3>
+        📍 {{ resultados.length }} inmueble{{ resultados.length === 1 ? '' : 's' }} encontrado{{ resultados.length === 1 ? '' : 's' }}
+        en la zona seleccionada
+      </h3>
+      <div class="resultados-grid">
+        @for (inmueble of resultados; track inmueble.id_prop) {
+          <div class="resultado-card">
+            <div class="card-body">
+              <p class="card-direccion">
+                <strong>{{ inmueble.direccion_prop }}</strong>
+              </p>
+              <p class="card-precio">
+                @if (inmueble.precio_venta) {
+                  💰 {{ inmueble.precio_venta | number }} €
+                } @else if (inmueble.precio_alquiler) {
+                  💰 {{ inmueble.precio_alquiler | number }} €/mes
+                }
+              </p>
+              <p class="card-detalles">
+                🛏️ {{ inmueble.nro_habitaciones_prop }} hab · 🚿 {{ inmueble.nro_banos_prop }} baños · 📐 {{ inmueble.metros_prop }} m²
+              </p>
+              <a
+                [routerLink]="'/detalle-' + (inmueble.type === 'venta' ? 'venta' : 'alquiler') + '/' + inmueble.id_prop"
+                class="card-enlace"
+              >
+                Ver detalle →
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Sin resultados -->
+  @if (!cargando && resultados.length === 0 && busquedaRealizada) {
+    <div class="mapa-sin-resultados">
+      <p>😕 No se encontraron inmuebles en la zona seleccionada. Intenta dibujar un área más amplia.</p>
+    </div>
+  }
+</div>
