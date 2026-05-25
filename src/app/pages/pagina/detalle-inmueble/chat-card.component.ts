@@ -28,8 +28,8 @@ import { Subscription } from 'rxjs';
           <i class="pi pi-comments text-white text-sm"></i>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Chat con el dueño</h3>
-          <p class="text-sm text-gray-400">Pregunta directamente al anunciante</p>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Contactar</h3>
+          <p class="text-sm text-gray-400">Habla directamente con el propietario</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ import { Subscription } from 'rxjs';
                       {{ msg.fecha_envio ? (msg.fecha_envio | date:'HH:mm') : '' }}
                     </span>
                     @if (msg.emisor_email === email_usuario() && msg.leido !== undefined) {
-                      <i class="pi text-[10px]" [ngClass]="msg.leido ? 'pi-check-circle text-emerald-300' : 'pi-check text-emerald-200'" [title]="msg.leido ? 'Leído' : 'Enviado'"></i>
+                      <i class="pi ml-1" style="font-size: 14px !important;" [ngClass]="msg.leido ? 'pi-check-circle text-blue-400 drop-shadow-sm' : 'pi-check text-gray-400'" [title]="msg.leido ? 'Leído' : 'Enviado'"></i>
                     }
                   </div>
                 </div>
@@ -93,6 +93,7 @@ import { Subscription } from 'rxjs';
                 [ngModel]="texto_input()"
                 (ngModelChange)="texto_input.set($event)"
                 (keyup.enter)="enviar_mensaje()"
+                (focus)="marcar_mensajes_como_leidos()"
                 placeholder="Escribe un mensaje..."
                 maxlength="1000"
                 class="flex-1 !rounded-full !border-gray-200 dark:!border-gray-600 !bg-gray-50 dark:!bg-gray-700"
@@ -275,13 +276,27 @@ export class ChatCard implements OnInit, OnDestroy, OnChanges {
         this.mensajes.update(msgs => {
           const existe = msgs.some(m => m.id_mensaje === mensaje.id_mensaje);
           if (existe) return msgs;
-          return [...msgs, mensaje];
+          // Si el mensaje es de otro, marcarlo como leído automáticamente
+          const leido = mensaje.emisor_email !== this.email_usuario();
+          return [...msgs, { ...mensaje, leido }];
         });
         this.scroll_al_final();
       }
     });
 
     this.chatService.suscribirse_a_sala(id_sala);
+  }
+
+  /** Marca todos los mensajes de otros como leídos (localmente) */
+  marcar_mensajes_como_leidos(): void {
+    this.mensajes.update(msgs =>
+      msgs.map(m => {
+        if (m.emisor_email !== this.email_usuario()) {
+          return { ...m, leido: true };
+        }
+        return m;
+      })
+    );
   }
 
   enviar_mensaje() {

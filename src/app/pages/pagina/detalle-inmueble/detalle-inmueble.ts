@@ -72,6 +72,7 @@ export class DetalleInmueble implements OnInit, OnChanges {
   // Datos del dueño para el chat
   email_dueno = '';
   nro_doc_dueno = '';
+  es_dueno = false;
 
   /**
    * Obtiene el nro_doc_dueno directamente del objeto inmueble si está disponible,
@@ -194,6 +195,7 @@ export class DetalleInmueble implements OnInit, OnChanges {
           this.loading = false;
           this.generarMapaUrl();
           this.nro_doc_dueno = this.obtener_nro_doc_desde_inmueble();
+          this.actualizar_es_dueno();
           this.cdr.detectChanges();
         },
         error: () => {
@@ -209,6 +211,7 @@ export class DetalleInmueble implements OnInit, OnChanges {
           this.loading = false;
           this.generarMapaUrl();
           this.nro_doc_dueno = this.obtener_nro_doc_desde_inmueble();
+          this.actualizar_es_dueno();
           this.cdr.detectChanges();
         },
         error: () => {
@@ -218,6 +221,11 @@ export class DetalleInmueble implements OnInit, OnChanges {
         }
       });
     }
+  }
+
+  private actualizar_es_dueno(): void {
+    const user = this.auth.getUser();
+    this.es_dueno = !!(user && this.nro_doc_dueno && user.nro_doc_dto === this.nro_doc_dueno);
   }
 
   private generarMapaUrl() {

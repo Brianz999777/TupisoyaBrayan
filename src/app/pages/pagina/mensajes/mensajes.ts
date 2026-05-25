@@ -211,11 +211,37 @@ export class Mensajes implements OnInit, OnDestroy {
       }
     }
 
+    // Marcar como leída en el servicio (actualiza el badge del topbar)
     this.chatService.marcar_sala_como_leida(item.sala.id_sala);
+    // También forzar actualización visual del badge en la lista de chats
+    this.chats_con_datos.update(items => [...items]);
     this.sala_seleccionada.set(item);
     this.cargar_mensajes_sala(item.sala.id_sala);
     this.suscribirse_ws_sala(item.sala.id_sala);
     this.iniciar_polling(item.sala.id_sala);
+    this.marcar_mensajes_como_leidos();
+  }
+
+  /** Marca todos los mensajes de la sala actual como leídos (localmente) */
+  marcar_mensajes_como_leidos(): void {
+    this.mensajes.update(msgs =>
+      msgs.map(m => {
+        if (m.emisor_email !== this.email_usuario()) {
+          return { ...m, leido: true };
+        }
+        return m;
+      })
+    );
+  }
+
+  /** Al hacer focus en el input de escribir: marca como leído y actualiza badge */
+  al_hacer_focus_en_input(): void {
+    this.marcar_mensajes_como_leidos();
+    const sala = this.sala_seleccionada();
+    if (sala) {
+      this.chatService.marcar_sala_como_leida(sala.sala.id_sala);
+      this.chats_con_datos.update(items => [...items]);
+    }
   }
 
   private cargar_mensajes_sala(id_sala: number) {
@@ -238,7 +264,9 @@ export class Mensajes implements OnInit, OnDestroy {
         this.mensajes.update(msgs => {
           const existe = msgs.some(m => m.id_mensaje === mensaje.id_mensaje);
           if (existe) return msgs;
-          return [...msgs, mensaje];
+          // Si el mensaje es de otro y estamos en la sala, marcarlo como leído automáticamente
+          const leido = mensaje.emisor_email !== this.email_usuario();
+          return [...msgs, { ...mensaje, leido }];
         });
         this.scroll_al_final();
       }
@@ -295,11 +323,7 @@ export class Mensajes implements OnInit, OnDestroy {
         next: (historial) => {
           const actuales = this.mensajes();
           if (historial.length > actuales.length) {
-            const mensajes_nuevos = historial.slice(actuales.length);
-            const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== this.email_usuario());
-            if (mensajes_de_otro.length > 0) {
-              this.chatService.incrementar_no_leidos(id_sala);
-            }
+            // Estamos viendo esta sala, NO incrementar no leídos
             this.mensajes.set(historial);
             this.scroll_al_final();
           }
@@ -315,31 +339,25 @@ export class Mensajes implements OnInit, OnDestroy {
 
     const interval = setInterval(() => {
       this.chatService.cargar_historial(id_sala).subscribe({
-        next: (historial) => {
+        next:  (historial) => {
           // Obtener los mensajes que tenemos actualmente para esta sala
           const sala_actual = this.sala_seleccionada();
-          const mensajes_actuales = (sala_actual && sala_actual.sala.id_sala === id_sala)
-            ? this.mensajes()
-            : [];
+          const es_sala_actual = sala_actual && sala_actual.sala.id_sala === id_sala;
+          const mensajes_actuales = es_sala_actual ? this.mensajes() : [];
 
-          if (mensajes_actuales.length === 0) {
-            // No tenemos mensajes cargados, solo actualizar no leídos si hay mensajes
+          if (es_sala_actual) {
+            // Si es la sala que estamos viendo, actualizar mensajes sin incrementar no leídos
+            if (historial.length > mensajes_actuales.length) {
+              this.mensajes.set(historial);
+              this.scroll_al_final();
+            }
+          } else {
+            // No estamos viendo esta sala, incrementar no leídos si hay mensajes nuevos de otros
             if (historial.length > 0) {
               const ultimo = historial[historial.length - 1];
               if (ultimo.emisor_email !== this.email_usuario()) {
                 this.chatService.incrementar_no_leidos(id_sala);
               }
-            }
-          } else if (historial.length > mensajes_actuales.length) {
-            const mensajes_nuevos = historial.slice(mensajes_actuales.length);
-            const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== this.email_usuario());
-            if (mensajes_de_otro.length > 0) {
-              this.chatService.incrementar_no_leidos(id_sala);
-            }
-            // Si es la sala seleccionada, actualizar los mensajes
-            if (sala_actual && sala_actual.sala.id_sala === id_sala) {
-              this.mensajes.set(historial);
-              this.scroll_al_final();
             }
           }
         }

@@ -24,14 +24,22 @@ export class ChatService {
   /** Mapa: id_sala -> cantidad de mensajes no leídos */
   private no_leidos_por_sala: Map<number, number> = new Map();
 
+  /** Conjunto de salas a las que ya nos suscribimos por WebSocket */
+  private salas_suscritas: Set<number> = new Set();
+
   /** Polling global para detectar mensajes nuevos */
   private polling_global_interval: any = null;
   private ultimos_mensajes_por_sala: Map<number, number> = new Map();
 
   constructor() {
-    // Iniciar polling global automáticamente si el usuario ya está logueado
+    // Escuchar evento de inicio de sesión para conectar WebSocket automáticamente
+    this.auth.login_event$.subscribe(() => {
+      this.conectar_websocket();
+    });
+
+    // Si el usuario ya está logueado, conectar WebSocket inmediatamente
     if (this.auth.getToken()) {
-      setTimeout(() => this.iniciar_polling_global(), 1000);
+      setTimeout(() => this.conectar_websocket(), 1000);
     }
   }
 
@@ -46,7 +54,22 @@ export class ChatService {
       return throwError(() => new Error('Debes iniciar sesión para usar el chat'));
     }
     const url = `${this.api_url}/sala?id_prop=${id_prop}&nro_doc_comprador=${nro_doc_comprador}&nro_doc_vendedor=${nro_doc_vendedor}`;
-    return this.http.post<SalaChat>(url, {});
+    return new Observable<SalaChat>(observer => {
+      this.http.post<SalaChat>(url, {}).subscribe({
+        next: (sala) => {
+          // Suscribirse automáticamente a la nueva sala por WebSocket
+          if (!this.salas_suscritas.has(sala.id_sala)) {
+            this.suscribirse_a_sala(sala.id_sala);
+            this.salas_suscritas.add(sala.id_sala);
+          }
+          observer.next(sala);
+          observer.complete();
+        },
+        error: (err) => {
+          observer.error(err);
+        }
+      });
+    });
   }
 
   listar_chats_del_usuario(nro_doc: string): Observable<SalaChat[]> {
@@ -77,7 +100,13 @@ export class ChatService {
 
   suscribirse_a_sala(id_sala: number): void {
     this.wsService.suscribirse(`/topic/sala/${id_sala}`, (mensaje: any) => {
-      this.mensaje_source.next(mensaje as MensajeChat);
+      const msg = mensaje as MensajeChat;
+      this.mensaje_source.next(msg);
+      // NOTIFICACIÓN INMEDIATA: si el mensaje es de otro usuario, incrementar no leídos al instante
+      const user = this.auth.getUser();
+      if (user && msg.emisor_email !== user.email_dto) {
+        this.incrementar_no_leidos(id_sala);
+      }
     });
   }
 
@@ -90,7 +119,26 @@ export class ChatService {
     if (token) {
       this.wsService.conectar(token);
       this.iniciar_polling_global();
+      // Suscribirse automáticamente a todas las salas del usuario para recibir notificaciones en tiempo real
+      this.suscribirse_a_todas_las_salas();
     }
+  }
+
+  /** Obtiene todas las salas del usuario y se suscribe por WebSocket a cada una */
+  private suscribirse_a_todas_las_salas(): void {
+    const user = this.auth.getUser();
+    if (!user) return;
+
+    this.listar_chats_del_usuario(user.nro_doc_dto).subscribe({
+      next: (salas) => {
+        for (const sala of salas) {
+          if (!this.salas_suscritas.has(sala.id_sala)) {
+            this.suscribirse_a_sala(sala.id_sala);
+            this.salas_suscritas.add(sala.id_sala);
+          }
+        }
+      }
+    });
   }
 
   desconectar_websocket(): void {
@@ -153,6 +201,10 @@ export class ChatService {
     const nro_doc = user.nro_doc_dto;
 
     this.polling_global_interval = setInterval(() => {
+      // Si el WebSocket está conectado, el polling global solo actualiza el contador de mensajes
+      // pero NO incrementa no leídos (el WebSocket ya lo hace en tiempo real)
+      const ws_conectado = this.esta_conectado_ws();
+
       this.listar_chats_del_usuario(nro_doc).subscribe({
         next: (salas) => {
           for (const sala of salas) {
@@ -160,11 +212,20 @@ export class ChatService {
               next: (historial) => {
                 const cantidad_anterior = this.ultimos_mensajes_por_sala.get(sala.id_sala) || 0;
                 if (historial.length > cantidad_anterior) {
-                  // Hay mensajes nuevos, verificar si son de otro usuario
-                  const mensajes_nuevos = historial.slice(cantidad_anterior);
-                  const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== email);
-                  if (mensajes_de_otro.length > 0) {
-                    this.incrementar_no_leidos(sala.id_sala);
+                  // Hay mensajes nuevos
+                  if (!ws_conectado) {
+                    // Solo incrementar no leídos si el WebSocket NO está conectado
+                    // (si está conectado, el WebSocket ya incrementó en tiempo real)
+                    const mensajes_nuevos = historial.slice(cantidad_anterior);
+                    const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== email);
+                    if (mensajes_de_otro.length > 0) {
+                      const no_leidos_actuales = this.no_leidos_por_sala.get(sala.id_sala) || 0;
+                      const diferencia = mensajes_de_otro.length - no_leidos_actuales;
+                      if (diferencia > 0) {
+                        this.no_leidos_por_sala.set(sala.id_sala, mensajes_de_otro.length);
+                        this.actualizar_total_no_leidos();
+                      }
+                    }
                   }
                 }
                 this.ultimos_mensajes_por_sala.set(sala.id_sala, historial.length);

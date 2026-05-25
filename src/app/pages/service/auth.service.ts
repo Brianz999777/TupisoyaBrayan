@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserDTO } from '../interfaces/user-dto';
-import { tap } from 'rxjs';
+import { Subject, tap } from 'rxjs';
 
 
 
@@ -15,6 +15,10 @@ export class Auth {
   private readonly tokenKey = 'authToken';
   private readonly userKey = 'authUser';
 
+  /** Subject que emite cuando el usuario inicia sesión (login o register) */
+  private login_source = new Subject<void>();
+  public login_event$ = this.login_source.asObservable();
+
   constructor(private http: HttpClient) {}
 
   register(registerRequest: any) {
@@ -22,6 +26,7 @@ export class Auth {
       tap((response) => {
         this.setToken(response.token);
         this.setUser(response.usuario_dto);
+        this.login_source.next();
       })
     );
   }
@@ -31,6 +36,7 @@ export class Auth {
       tap((response) => {
         this.setToken(response.token);
         this.setUser(response.usuario_dto);
+        this.login_source.next();
       })
     );
   }

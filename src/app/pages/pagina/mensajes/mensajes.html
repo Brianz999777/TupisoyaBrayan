@@ -156,6 +156,13 @@
                         <p class="message-text">{{ msg.contenido }}</p>
                         <div class="message-time">
                           <span>{{ msg.fecha_envio ? (msg.fecha_envio | date:'HH:mm') : '' }}</span>
+                          @if (msg.emisor_email === email_usuario()) {
+                            @if (msg.leido) {
+                              <i class="pi pi-check-circle text-blue-500 text-sm ml-1.5 drop-shadow-sm" title="Leído" style="font-size: 14px !important;"></i>
+                            } @else {
+                              <i class="pi pi-check text-gray-400 text-sm ml-1.5" title="Enviado" style="font-size: 14px !important;"></i>
+                            }
+                          }
                         </div>
                       </div>
                     </div>
@@ -172,6 +179,7 @@
                     [ngModel]="texto_input()"
                     (ngModelChange)="texto_input.set($event)"
                     (keyup.enter)="enviar_mensaje()"
+                    (focus)="al_hacer_focus_en_input()"
                     placeholder="Escribe un mensaje..."
                     maxlength="1000"
                     class="chat-input-field"

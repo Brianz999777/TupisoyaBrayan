@@ -265,7 +265,8 @@
                         </div>
                     </div>
 
-                    <!-- TARJETA DE CONTACTO -->
+                    <!-- TARJETA DE CONTACTO (oculta si eres el dueño) -->
+                    @if (!es_dueno) {
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-700">
                             <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0">
@@ -291,17 +292,11 @@
                             </div>
                             <div class="flex flex-col gap-3 pt-2">
                                 <button pButton [disabled]="enviando_contacto" (click)="enviarContacto()" label="Enviar mensaje" icon="pi pi-send" class="!bg-gradient-to-r !from-emerald-500 !to-teal-500 !text-white !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!from-emerald-600 hover:!to-teal-600 !transition-all !shadow-lg !shadow-emerald-500/25 !w-full"></button>
-                                <button pButton label="Llamar al agente" icon="pi pi-phone" class="!bg-gray-900 dark:!bg-white !text-white dark:!text-gray-900 !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!bg-emerald-600 hover:!text-white !transition-all !shadow-md !w-full"></button>
+                                <button pButton label="Habla con el propietario" icon="pi pi-phone" class="!bg-gray-900 dark:!bg-white !text-white dark:!text-gray-900 !font-bold !rounded-full !border-0 !px-6 !py-2.5 hover:!bg-emerald-600 hover:!text-white !transition-all !shadow-md !w-full"></button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- CHAT CON EL DUEÑO -->
-                    <app-chat-card
-                        [id_prop]="id!"
-                        [email_vendedor]="email_dueno"
-                        [nro_doc_vendedor]="nro_doc_dueno"
-                    />
+                    }
 
                     <!-- CONSEJO DE SEGURIDAD -->
                     <div class="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl">
