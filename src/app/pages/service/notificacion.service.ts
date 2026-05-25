@@ -24,4 +24,17 @@ export class NotificacionService {
     console.log(`[NotificacionService] ✅ PUT marcar leída → ${this.baseUrl}/${id}/leida`);
     return this.http.put(`${this.baseUrl}/${id}/leida`, {}, { headers: this.getHeaders(), responseType: 'text' });
   }
+
+  crearNotificacion(notificacion: {
+    correo_usuario_noti: string;
+    mensaje_noti: string;
+    id_prop_noti: number;
+    tipo_prop_noti: string;
+  }): Observable<any> {
+    console.log(`[NotificacionService] ➕ POST crear notificación → ${this.baseUrl}`, notificacion);
+    return this.http.post(`${this.baseUrl}`, notificacion, {
+      headers: this.getHeaders(),
+      responseType: 'text'
+    });
+  }
 }

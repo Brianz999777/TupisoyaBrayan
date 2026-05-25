@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Input } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
@@ -6,8 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
+import { BadgeModule } from 'primeng/badge';
+import { Subscription } from 'rxjs';
 import { Auth } from '../../service/auth.service';
 import { UserDTO } from '../../interfaces/user-dto';
+import { ChatService } from '../../service/chat.service';
 
 @Component({
     selector: 'topbar-widget',
@@ -19,7 +22,8 @@ import { UserDTO } from '../../interfaces/user-dto';
         ButtonModule,
         RippleModule,
         AvatarModule,
-        TooltipModule
+        TooltipModule,
+        BadgeModule
     ],
     template: `
         <nav [ngClass]="(isHero && !isScrolled) ? 'bg-transparent border-transparent py-[1.1rem]' : 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-800/50 py-3.5'"
@@ -58,6 +62,19 @@ import { UserDTO } from '../../interfaces/user-dto';
                 <!-- Actions -->
                 <div class="flex items-center gap-3">
                     @if (isLoggedIn) {
+                        <!-- Botón de mensajes con badge -->
+                        <div (click)="router.navigate(['/mensajes'])"
+                            [ngClass]="(isHero && !isScrolled) ? 'bg-white/10 hover:bg-white/20 border-white/20' : 'bg-gray-100/70 hover:bg-gray-200/70 dark:bg-gray-800/70 dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700'"
+                            class="relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all shadow-sm border"
+                            pTooltip="Mensajes" tooltipPosition="bottom">
+                            <i class="pi pi-comments" [ngClass]="(isHero && !isScrolled) ? 'text-white' : 'text-gray-600 dark:text-gray-300'"></i>
+                            @if (total_no_leidos > 0) {
+                                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-red-500/30 animate-pulse">
+                                    {{ total_no_leidos > 99 ? '99+' : total_no_leidos }}
+                                </span>
+                            }
+                        </div>
+
                         <div (click)="router.navigate(['/perfil'])"
                             [ngClass]="(isHero && !isScrolled) ? 'bg-white/10 hover:bg-white/20 border-white/20' : 'bg-gray-100/70 hover:bg-gray-200/70 dark:bg-gray-800/70 dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700'"
                             class="flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full border shadow-sm transition-all duration-300 cursor-pointer group">
@@ -102,16 +119,20 @@ import { UserDTO } from '../../interfaces/user-dto';
         </nav>
     `
 })
-export class TopbarWidget implements OnInit {
+export class TopbarWidget implements OnInit, OnDestroy {
     @Input() isHero = true;
 
     isLoggedIn = false;
     user: UserDTO | null = null;
     isScrolled = false;
+    total_no_leidos = 0;
+
+    private suscripcion_no_leidos: Subscription | null = null;
 
     constructor(
         public router: Router,
-        private authService: Auth
+        private authService: Auth,
+        private chatService: ChatService
     ) {}
 
     @HostListener('window:scroll', [])
@@ -122,6 +143,17 @@ export class TopbarWidget implements OnInit {
     ngOnInit() {
         this.isLoggedIn = this.authService.isLoggedIn();
         this.user = this.authService.getUser();
+        if (this.isLoggedIn) {
+            this.suscripcion_no_leidos = this.chatService.total_no_leidos$.subscribe(total => {
+                this.total_no_leidos = total;
+            });
+        }
+    }
+
+    ngOnDestroy() {
+        if (this.suscripcion_no_leidos) {
+            this.suscripcion_no_leidos.unsubscribe();
+        }
     }
 
     goToLanding() {

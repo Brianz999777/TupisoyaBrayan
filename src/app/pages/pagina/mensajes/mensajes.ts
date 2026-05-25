@@ -68,6 +68,7 @@ export class Mensajes implements OnInit, OnDestroy {
 
   private suscripcion_mensajes: Subscription | null = null;
   private polling_interval: any = null;
+  private polling_intervals: Map<number, any> = new Map();
 
   constructor() {
     const user = this.auth.getUser();
@@ -112,6 +113,8 @@ export class Mensajes implements OnInit, OnDestroy {
         this.cargando_chats.set(false);
         for (const item of items) {
           this.cargar_datos_chat(item);
+          // Iniciar polling para cada sala para detectar mensajes nuevos de otros
+          this.iniciar_polling_para_sala(item.sala.id_sala);
         }
       },
       error: () => {
@@ -305,11 +308,57 @@ export class Mensajes implements OnInit, OnDestroy {
     }, 5000);
   }
 
+  /** Inicia polling para una sala específica (para detectar mensajes nuevos de otros) */
+  private iniciar_polling_para_sala(id_sala: number): void {
+    // Si ya hay polling para esta sala, no duplicar
+    if (this.polling_intervals.has(id_sala)) return;
+
+    const interval = setInterval(() => {
+      this.chatService.cargar_historial(id_sala).subscribe({
+        next: (historial) => {
+          // Obtener los mensajes que tenemos actualmente para esta sala
+          const sala_actual = this.sala_seleccionada();
+          const mensajes_actuales = (sala_actual && sala_actual.sala.id_sala === id_sala)
+            ? this.mensajes()
+            : [];
+
+          if (mensajes_actuales.length === 0) {
+            // No tenemos mensajes cargados, solo actualizar no leídos si hay mensajes
+            if (historial.length > 0) {
+              const ultimo = historial[historial.length - 1];
+              if (ultimo.emisor_email !== this.email_usuario()) {
+                this.chatService.incrementar_no_leidos(id_sala);
+              }
+            }
+          } else if (historial.length > mensajes_actuales.length) {
+            const mensajes_nuevos = historial.slice(mensajes_actuales.length);
+            const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== this.email_usuario());
+            if (mensajes_de_otro.length > 0) {
+              this.chatService.incrementar_no_leidos(id_sala);
+            }
+            // Si es la sala seleccionada, actualizar los mensajes
+            if (sala_actual && sala_actual.sala.id_sala === id_sala) {
+              this.mensajes.set(historial);
+              this.scroll_al_final();
+            }
+          }
+        }
+      });
+    }, 5000);
+
+    this.polling_intervals.set(id_sala, interval);
+  }
+
   private detener_polling() {
     if (this.polling_interval) {
       clearInterval(this.polling_interval);
       this.polling_interval = null;
     }
+    // Detener todos los polling de salas
+    this.polling_intervals.forEach((interval) => {
+      clearInterval(interval);
+    });
+    this.polling_intervals.clear();
   }
 
   private scroll_al_final() {

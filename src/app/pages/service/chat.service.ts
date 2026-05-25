@@ -24,6 +24,17 @@ export class ChatService {
   /** Mapa: id_sala -> cantidad de mensajes no leídos */
   private no_leidos_por_sala: Map<number, number> = new Map();
 
+  /** Polling global para detectar mensajes nuevos */
+  private polling_global_interval: any = null;
+  private ultimos_mensajes_por_sala: Map<number, number> = new Map();
+
+  constructor() {
+    // Iniciar polling global automáticamente si el usuario ya está logueado
+    if (this.auth.getToken()) {
+      setTimeout(() => this.iniciar_polling_global(), 1000);
+    }
+  }
+
   private verificar_autenticacion(): boolean {
     const token = this.auth.getToken();
     if (!token) return false;
@@ -78,11 +89,13 @@ export class ChatService {
     const token = this.auth.getToken();
     if (token) {
       this.wsService.conectar(token);
+      this.iniciar_polling_global();
     }
   }
 
   desconectar_websocket(): void {
     this.wsService.desconectar();
+    this.detener_polling_global();
   }
 
   esta_conectado_ws(): boolean {
@@ -126,5 +139,48 @@ export class ChatService {
       total += cantidad;
     });
     this.total_no_leidos_source.next(total);
+  }
+
+  // ========== POLLING GLOBAL PARA NO LEÍDOS ==========
+
+  /** Inicia un polling global que verifica mensajes nuevos en todas las salas del usuario */
+  iniciar_polling_global(): void {
+    this.detener_polling_global();
+    const user = this.auth.getUser();
+    if (!user) return;
+
+    const email = user.email_dto;
+    const nro_doc = user.nro_doc_dto;
+
+    this.polling_global_interval = setInterval(() => {
+      this.listar_chats_del_usuario(nro_doc).subscribe({
+        next: (salas) => {
+          for (const sala of salas) {
+            this.cargar_historial(sala.id_sala).subscribe({
+              next: (historial) => {
+                const cantidad_anterior = this.ultimos_mensajes_por_sala.get(sala.id_sala) || 0;
+                if (historial.length > cantidad_anterior) {
+                  // Hay mensajes nuevos, verificar si son de otro usuario
+                  const mensajes_nuevos = historial.slice(cantidad_anterior);
+                  const mensajes_de_otro = mensajes_nuevos.filter(m => m.emisor_email !== email);
+                  if (mensajes_de_otro.length > 0) {
+                    this.incrementar_no_leidos(sala.id_sala);
+                  }
+                }
+                this.ultimos_mensajes_por_sala.set(sala.id_sala, historial.length);
+              }
+            });
+          }
+        }
+      });
+    }, 10000); // Cada 10 segundos
+  }
+
+  /** Detiene el polling global */
+  detener_polling_global(): void {
+    if (this.polling_global_interval) {
+      clearInterval(this.polling_global_interval);
+      this.polling_global_interval = null;
+    }
   }
 }

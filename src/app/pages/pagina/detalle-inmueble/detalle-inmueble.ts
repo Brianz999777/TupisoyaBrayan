@@ -114,16 +114,18 @@ export class DetalleInmueble implements OnInit, OnChanges {
         this.messageService.add({ severity: 'success', summary: 'Mensaje enviado', detail: 'El anunciante recibirá tu mensaje en su correo.' });
 
         const user = this.auth.getUser();
-        if (user && this.email_dueno && user.email_dto !== this.email_dueno) {
+        if (user && this.nro_doc_dueno && user.nro_doc_dto !== this.nro_doc_dueno) {
           const msgChat: MensajeChat = {
             id_sala: 0,
             emisor_email: user.email_dto,
-            contenido: `📧 ${this.contacto_mensaje.trim()}`
+            contenido: this.contacto_mensaje.trim()
           };
           this.chatService.obtener_o_crear_sala(this.id!, user.nro_doc_dto, this.nro_doc_dueno).subscribe({
             next: (sala: any) => {
               msgChat.id_sala = sala.id_sala;
               this.chatService.enviar_mensaje_http(msgChat).subscribe();
+              // Notificar al vendedor que tiene un nuevo mensaje no leído
+              this.chatService.incrementar_no_leidos(sala.id_sala);
             },
             error: () => {}
           });
