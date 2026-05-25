@@ -11,6 +11,8 @@
     </head>
 
     <body>
+        <!-- Polyfill para sockjs-client que necesita 'global' (como en Node.js) -->
+        <script>window.global = window;</script>
         <app-root></app-root>
     </body>
 </html>

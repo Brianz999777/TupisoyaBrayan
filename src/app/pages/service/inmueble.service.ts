@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PropiedadVenta, PropiedadAlquiler, InmuebleVentaDto, TarjetaVenta, TarjetaAlquiler } from '../interfaces/inmueble';
 import { ContactoInmuebleDTO } from '../interfaces/contacto-inmueble';
+import { Persona } from '../interfaces/chat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -112,5 +113,17 @@ export class InmuebleService {
   enviarEmailContacto(dto: ContactoInmuebleDTO): Observable<string> {
     console.log(`[InmuebleService] 📧 POST enviarEmailContacto → ${this.emailUrl}`, dto);
     return this.http.post<string>(`${this.emailUrl}`, dto, { responseType: 'text' as 'json' });
+  }
+
+  /** Obtiene los datos del vendedor de un inmueble en venta */
+  buscarVendedor(idProp: number): Observable<Persona> {
+    console.log(`[InmuebleService] 👤 GET buscarVendedor → ${this.baseUrl}/ventas/busqueda-vendedor/${idProp}`);
+    return this.http.get<Persona>(`${this.baseUrl}/ventas/busqueda-vendedor/${idProp}`);
+  }
+
+  /** Obtiene los datos del arrendatario/ dueño de un inmueble en alquiler */
+  buscarArrendatario(idProp: number): Observable<Persona> {
+    console.log(`[InmuebleService] 👤 GET buscarArrendatario → ${this.baseUrl}/alquiler/busqueda-arrendatario/${idProp}`);
+    return this.http.get<Persona>(`${this.baseUrl}/alquiler/busqueda-arrendatario/${idProp}`);
   }
 }

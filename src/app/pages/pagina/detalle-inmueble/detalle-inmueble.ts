@@ -15,6 +15,9 @@ import { PropiedadAlquiler, PropiedadVenta } from '../../interfaces/inmueble';
 import { InmuebleService } from '../../service/inmueble.service';
 import { Auth } from '../../service/auth.service';
 import { TopbarWidget } from '../topbar/topbarwidget.component';
+import { ChatCard } from './chat-card.component';
+import { ChatService } from '../../service/chat.service';
+import { MensajeChat } from '../../interfaces/chat.model';
 
 @Component({
   selector: 'app-detalle-inmueble',
@@ -30,7 +33,8 @@ import { TopbarWidget } from '../topbar/topbarwidget.component';
     TextareaModule,
     ToastModule,
     FormsModule,
-    TopbarWidget
+    TopbarWidget,
+    ChatCard
   ],
   providers: [MessageService],
   templateUrl: './detalle-inmueble.html',
@@ -65,6 +69,19 @@ export class DetalleInmueble implements OnInit, OnChanges {
   contacto_mensaje = '';
   enviando_contacto = false;
 
+  // Datos del dueño para el chat
+  email_dueno = '';
+  nro_doc_dueno = '';
+
+  /**
+   * Obtiene el nro_doc_dueno directamente del objeto inmueble si está disponible,
+   * sin necesidad de llamar al backend.
+   */
+  private obtener_nro_doc_desde_inmueble(): string {
+    const info: any = this.generalInfo;
+    return info?.nro_doc_dueno || '';
+  }
+
   constructor(
     private route: ActivatedRoute,
     private inmuebleService: InmuebleService,
@@ -72,6 +89,8 @@ export class DetalleInmueble implements OnInit, OnChanges {
     private sanitizer: DomSanitizer,
     private auth: Auth
   ) {}
+
+  private chatService = inject(ChatService);
 
   enviarContacto() {
     if (!this.contacto_nombre.trim() || !this.contacto_email.trim() || !this.contacto_mensaje.trim()) {
@@ -89,19 +108,33 @@ export class DetalleInmueble implements OnInit, OnChanges {
       mensaje_email: this.contacto_mensaje.trim(),
       id_prop_email: this.id
     };
-    console.log('[Contacto] this.id vale:', this.id, '(tipo:', typeof this.id, ')');
-    console.log('[Contacto] Enviando payload:', JSON.stringify(payload, null, 2));
     this.inmuebleService.enviarEmailContacto(payload).subscribe({
       next: (res) => {
         this.enviando_contacto = false;
         this.messageService.add({ severity: 'success', summary: 'Mensaje enviado', detail: 'El anunciante recibirá tu mensaje en su correo.' });
+
+        const user = this.auth.getUser();
+        if (user && this.email_dueno && user.email_dto !== this.email_dueno) {
+          const msgChat: MensajeChat = {
+            id_sala: 0,
+            emisor_email: user.email_dto,
+            contenido: `📧 ${this.contacto_mensaje.trim()}`
+          };
+          this.chatService.obtener_o_crear_sala(this.id!, user.nro_doc_dto, this.nro_doc_dueno).subscribe({
+            next: (sala: any) => {
+              msgChat.id_sala = sala.id_sala;
+              this.chatService.enviar_mensaje_http(msgChat).subscribe();
+            },
+            error: () => {}
+          });
+        }
+
         this.contacto_nombre = '';
         this.contacto_email = '';
         this.contacto_mensaje = '';
       },
       error: (err) => {
         this.enviando_contacto = false;
-        console.error('Error al enviar contacto:', err);
         this.messageService.add({ severity: 'error', summary: 'Error al enviar', detail: err.error || 'No se pudo enviar el mensaje. Inténtalo de nuevo.' });
       }
     });
@@ -155,15 +188,13 @@ export class DetalleInmueble implements OnInit, OnChanges {
     if (this.tipo === 'venta' && this.id) {
       this.inmuebleService.getVentaById(this.id).subscribe({
         next: (res) => {
-          console.log('[DetalleInmueble] Respuesta venta:', res);
-          console.log('[DetalleInmueble] fotos_urls:', (res as any)?.fotos_urls);
           this.inmuebleVenta = res;
           this.loading = false;
           this.generarMapaUrl();
+          this.nro_doc_dueno = this.obtener_nro_doc_desde_inmueble();
           this.cdr.detectChanges();
         },
-        error: (err) => {
-          console.error("Error obteniendo detalle venta", err);
+        error: () => {
           this.loading = false;
           this.error = true;
           this.cdr.detectChanges();
@@ -172,15 +203,13 @@ export class DetalleInmueble implements OnInit, OnChanges {
     } else if (this.tipo === 'alquiler' && this.id) {
       this.inmuebleService.getAlquilerById(this.id).subscribe({
         next: (res) => {
-          console.log('[DetalleInmueble] Respuesta alquiler:', res);
-          console.log('[DetalleInmueble] fotos_urls:', (res as any)?.fotos_urls);
           this.inmuebleAlquiler = res;
           this.loading = false;
           this.generarMapaUrl();
+          this.nro_doc_dueno = this.obtener_nro_doc_desde_inmueble();
           this.cdr.detectChanges();
         },
-        error: (err) => {
-          console.error("Error obteniendo detalle alquiler", err);
+        error: () => {
           this.loading = false;
           this.error = true;
           this.cdr.detectChanges();
