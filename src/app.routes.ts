@@ -16,28 +16,18 @@ import { Servicios } from './app/pages/pagina/servicios/servicios';
 import { Contacto } from './app/pages/pagina/contacto/contacto';
 import { Mensajes } from './app/pages/pagina/mensajes/mensajes';
 import { MapaBusqueda } from './app/pages/pagina/mapa-busqueda/mapa-busqueda';
+import { ResultadosMapa } from './app/pages/pagina/resultados-mapa/resultados-mapa';
 
 export const appRoutes: Routes = [
-    {
-        path: '',
-        component: AppLayout,
-        children: [
-            { path: '', redirectTo: '/landing', pathMatch: 'full' },
-            { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
-            { path: 'documentation', component: Documentation },
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
-            { path: 'busqueda-venta', component: BuquedaVenta },
-            { path: 'busqueda-alquiler', component: BuquedaAlquiler },
-            { path: 'mapa-busqueda', component: MapaBusqueda }
-        ]
-    },
+    // ── Rutas independientes (sin AppLayout, con su propio topbar) ────
+    { path: 'mapa-busqueda', component: MapaBusqueda },
+    { path: 'resultados-mapa', component: ResultadosMapa },
     { path: 'detalle-venta/:id', component: DetalleInmueble },
     { path: 'detalle-alquiler/:id', component: DetalleInmueble },
     { path: 'perfil', component: Perfil },
     { path: 'publicaciones', component: Publicaciones },
     { path: 'publicar-anuncio', component: PublicarAnuncio },
     { path: 'landing', component: Landing },
-
     { path: 'nosotros', component: Nosotros },
     { path: 'servicios', component: Servicios },
     { path: 'contacto', component: Contacto },
@@ -45,5 +35,21 @@ export const appRoutes: Routes = [
     { path: 'register', component: Register },
     { path: 'login', component: LogIn },
     { path: 'mensajes', component: Mensajes },
+    { path: 'busqueda-venta', component: BuquedaVenta },
+    { path: 'busqueda-alquiler', component: BuquedaAlquiler },
+    { path: 'documentation', component: Documentation },
+    { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
+    { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
+
+    // ── AppLayout (solo para la raíz vacía) ───────────────────────────
+    {
+        path: '',
+        component: AppLayout,
+        children: [
+            { path: '', redirectTo: '/landing', pathMatch: 'full' }
+        ]
+    },
+
+    // ── Catch-all ─────────────────────────────────────────────────────
     { path: '**', redirectTo: '/notfound' }
 ];

@@ -11,6 +11,7 @@ import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
+import { TopbarWidget } from '../topbar/topbarwidget.component';
 
 
 @Component({
@@ -25,10 +26,12 @@ import { finalize } from 'rxjs';
     CheckboxModule,
     RippleModule,
     RouterLink,
-    ToastModule
+    ToastModule,
+    TopbarWidget
   ],
   providers: [MessageService],
   template: `
+    <topbar-widget />
     <div class="min-h-screen flex items-center justify-center relative overflow-hidden p-4">
       <!-- Background image -->
       <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/demo/images/galleria/portada.jpg');"></div>

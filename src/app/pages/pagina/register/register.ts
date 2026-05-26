@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { NotificacionService } from '../../service/notificacion.service';
 import {RegisterRequest} from '../../interfaces/register';
+import { TopbarWidget } from '../topbar/topbarwidget.component';
 
 @Component({
   selector: 'app-register',
@@ -27,10 +28,12 @@ import {RegisterRequest} from '../../interfaces/register';
     RippleModule,
     ReactiveFormsModule,
     TabsModule,
-    ToastModule
+    ToastModule,
+    TopbarWidget
   ],
   providers: [MessageService],
   template: `
+    <topbar-widget />
     <div class="min-h-screen flex items-center justify-center relative overflow-hidden p-4 py-8">
       <!-- Background image -->
       <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/demo/images/galleria/portada.jpg');"></div>

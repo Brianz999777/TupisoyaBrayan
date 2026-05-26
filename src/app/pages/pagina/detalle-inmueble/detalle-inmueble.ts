@@ -69,6 +69,9 @@ export class DetalleInmueble implements OnInit, OnChanges {
   contacto_mensaje = '';
   enviando_contacto = false;
 
+  // Modal de login
+  mostrarModalLogin = false;
+
   // Datos del dueño para el chat
   email_dueno = '';
   nro_doc_dueno = '';
@@ -102,6 +105,13 @@ export class DetalleInmueble implements OnInit, OnChanges {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se ha podido identificar el inmueble.' });
       return;
     }
+
+    // Verificar si el usuario está logueado
+    if (!this.auth.isLoggedIn()) {
+      this.mostrarModalLogin = true;
+      return;
+    }
+
     this.enviando_contacto = true;
     const payload = {
       nombre_usuario_email: this.contacto_nombre.trim(),
@@ -141,6 +151,15 @@ export class DetalleInmueble implements OnInit, OnChanges {
         this.messageService.add({ severity: 'error', summary: 'Error al enviar', detail: err.error || 'No se pudo enviar el mensaje. Inténtalo de nuevo.' });
       }
     });
+  }
+
+  cerrarModalLogin() {
+    this.mostrarModalLogin = false;
+  }
+
+  irALogin() {
+    this.mostrarModalLogin = false;
+    this.router.navigate(['/login']);
   }
 
   volver() {

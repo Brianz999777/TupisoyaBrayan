@@ -1,0 +1,46 @@
+<!-- Topbar independiente -->
+<topbar-widget></topbar-widget>
+
+<div class="resultados-mapa-container">
+  <!-- Mapa a pantalla completa -->
+  <div id="mapaLeafletResultados" class="mapa-leaflet"></div>
+
+  <!-- Panel lateral derecho con resultados -->
+  <div class="panel-lateral">
+    <div class="panel-contenido">
+      <div class="panel-header">
+        <h3>
+          📍 {{ resultados.length }} inmueble{{ resultados.length === 1 ? '' : 's' }}
+        </h3>
+        <button class="btn-cerrar" (click)="volverAlMapa()" title="Volver al mapa">✕</button>
+      </div>
+      <div class="panel-lista">
+        @for (inmueble of resultados; track inmueble.id_prop) {
+          <div class="resultado-card" (click)="centrarEnInmueble(inmueble)">
+            <div class="card-body">
+              <p class="card-precio">
+                @if (inmueble.precio_venta) {
+                  💰 {{ inmueble.precio_venta | number }} €
+                } @else if (inmueble.precio_alquiler) {
+                  💰 {{ inmueble.precio_alquiler | number }} €/mes
+                }
+              </p>
+              <p class="card-direccion">
+                <strong>{{ inmueble.direccion_prop }}</strong>
+              </p>
+              <p class="card-detalles">
+                🛏️ {{ inmueble.nro_habitaciones_prop }} hab · 🚿 {{ inmueble.nro_banos_prop }} baños · 📐 {{ inmueble.metros_prop }} m²
+              </p>
+              <a
+                [routerLink]="'/detalle-' + (inmueble.type === 'venta' ? 'venta' : 'alquiler') + '/' + inmueble.id_prop"
+                class="card-enlace"
+              >
+                Ver detalle →
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

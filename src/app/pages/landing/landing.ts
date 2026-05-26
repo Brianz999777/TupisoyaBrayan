@@ -12,12 +12,11 @@ import { FooterWidget } from './components/footerwidget';
 import { BuquedaAlquiler } from '../pagina/buqueda-alquiler/buqueda-alquiler';
 import { BuquedaVenta } from '../pagina/buqueda-venta/buqueda-venta';
 import { DetalleInmueble } from '../pagina/detalle-inmueble/detalle-inmueble';
-import { MapaBusqueda } from '../pagina/mapa-busqueda/mapa-busqueda';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [CommonModule, FormsModule, HttpClientModule, TopbarWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, InputTextModule, BuquedaVenta, BuquedaAlquiler, DetalleInmueble, MapaBusqueda],
+    imports: [CommonModule, FormsModule, HttpClientModule, TopbarWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, InputTextModule, BuquedaVenta, BuquedaAlquiler, DetalleInmueble],
     template: `
         <div class="min-h-screen flex flex-col bg-white dark:bg-gray-950">
             <topbar-widget [isHero]="!buscando && !verDetalleActivo" />
@@ -90,7 +89,7 @@ import { MapaBusqueda } from '../pagina/mapa-busqueda/mapa-busqueda';
                                         <span>Buscar</span>
                                     </button>
                                     <button
-                                        (click)="scrollToMapa()"
+                                        (click)="irAlMapa()"
                                         class="px-6 py-3.5 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/25 flex items-center gap-2 whitespace-nowrap"
                                     >
                                         <i class="pi pi-map"></i>
@@ -180,8 +179,15 @@ import { MapaBusqueda } from '../pagina/mapa-busqueda/mapa-busqueda';
                                 Como en Idealista, pero más inteligente.
                             </p>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <app-mapa-busqueda />
+                        <div class="flex justify-center">
+                            <button
+                                (click)="irAlMapa()"
+                                class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg rounded-2xl transition-all shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                            >
+                                <i class="pi pi-map text-xl"></i>
+                                <span>Abrir mapa interactivo</span>
+                                <i class="pi pi-arrow-right text-sm"></i>
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -642,6 +648,10 @@ export class Landing implements OnInit {
 
     volver() {
         this.verDetalleActivo = false;
+    }
+
+    irAlMapa() {
+        this.router.navigate(['/mapa-busqueda']);
     }
 
     scrollToMapa() {

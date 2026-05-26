@@ -1,79 +1,110 @@
+<!-- Topbar independiente -->
+<topbar-widget></topbar-widget>
+
 <div class="mapa-busqueda-container">
-  <div class="mapa-header">
-    <h2>🔍 Buscar inmuebles por zona</h2>
-    <p class="mapa-subtitle">
-      Dibuja un polígono en el mapa para buscar propiedades dentro del área seleccionada.
-      Usa la herramienta <strong>Polígono</strong> del panel de control.
-    </p>
+  <!-- Mapa a pantalla completa -->
+  <div id="mapaLeaflet" class="mapa-leaflet"></div>
+
+  <!-- Selector de tipo: Venta / Alquiler (flotante arriba) -->
+  <div class="selector-tipo">
+    <button
+      class="tipo-btn"
+      [class.tipo-btn--activo]="tipoBusqueda === 'venta'"
+      [class.tipo-btn--venta]="tipoBusqueda === 'venta'"
+      (click)="cambiarTipo('venta')"
+    >
+      <i class="pi pi-shopping-cart"></i>
+      <span>Compra</span>
+    </button>
+    <button
+      class="tipo-btn"
+      [class.tipo-btn--activo]="tipoBusqueda === 'alquiler'"
+      [class.tipo-btn--alquiler]="tipoBusqueda === 'alquiler'"
+      (click)="cambiarTipo('alquiler')"
+    >
+      <i class="pi pi-key"></i>
+      <span>Alquiler</span>
+    </button>
   </div>
 
-  <div class="mapa-contenido">
-    <!-- Mapa -->
-    <div class="mapa-izquierda">
-      <div id="mapaLeaflet" class="mapa-leaflet"></div>
-
-      <!-- Overlay de carga mientras se realiza la petición -->
-      @if (cargando) {
-        <div class="mapa-loading-overlay">
-          <div class="spinner"></div>
-          <span>Buscando inmuebles en la zona...</span>
-        </div>
-      }
+  <!-- Instrucciones flotantes (solo cuando no hay panel) -->
+  @if (!mostrarPanel) {
+    <div class="mapa-instrucciones">
+      <div class="instruccion-icono">
+        <i class="pi pi-pencil"></i>
+      </div>
+      <div class="instruccion-texto">
+        <strong>Dibuja un polígono</strong> en el mapa
+        <span class="instruccion-sub">seleccionando la herramienta <i class="pi pi-star"></i> en la esquina superior derecha</span>
+      </div>
     </div>
+  }
 
-    <!-- Panel lateral de resultados -->
-    <div class="mapa-panel-derecho" [class.visible]="resultados.length > 0 || busquedaRealizada">
-      @if (cargando) {
-        <div class="panel-loading">
-          <div class="spinner"></div>
-          <span>Buscando...</span>
-        </div>
-      }
+  <!-- Overlay de carga -->
+  @if (cargando) {
+    <div class="mapa-loading-overlay">
+      <div class="spinner"></div>
+      <span>Buscando {{ tipoBusqueda === 'venta' ? 'ventas' : 'alquileres' }} en la zona...</span>
+    </div>
+  }
 
-      @if (!cargando && resultados.length > 0) {
-        <div class="panel-resultados">
-          <div class="panel-header">
+  <!-- Sin resultados -->
+  @if (!cargando && busquedaRealizada && resultados.length === 0 && !errorMsg) {
+    <div class="mapa-sin-resultados">
+      <p>😕 No se encontraron {{ tipoBusqueda === 'venta' ? 'ventas' : 'alquileres' }} en la zona seleccionada. Intenta dibujar un área más amplia.</p>
+    </div>
+  }
+
+  <!-- Error en la petición -->
+  @if (errorMsg) {
+    <div class="mapa-error">
+      <p>❌ {{ errorMsg }}</p>
+    </div>
+  }
+
+  <!-- Panel lateral con resultados -->
+  @if (mostrarPanel) {
+    <div
+      class="panel-lateral"
+      [class.panel-lateral--venta]="tipoBusqueda === 'venta'"
+      [class.panel-lateral--alquiler]="tipoBusqueda === 'alquiler'"
+    >
+      <div class="panel-contenido">
+        <div class="panel-header">
+          <div class="panel-header-info">
+            <span class="panel-badge" [class.badge-venta]="tipoBusqueda === 'venta'" [class.badge-alquiler]="tipoBusqueda === 'alquiler'">
+              {{ tipoBusqueda === 'venta' ? '💰 Compra' : '🔑 Alquiler' }}
+            </span>
             <h3>
-              📍 {{ resultados.length }} inmueble{{ resultados.length === 1 ? '' : 's' }}
+              {{ resultados.length }} inmueble{{ resultados.length === 1 ? '' : 's' }}
             </h3>
-            <button class="btn-cerrar" (click)="cerrarPanel()" title="Cerrar panel">✕</button>
           </div>
-          <div class="panel-lista">
-            @for (inmueble of resultados; track inmueble.id_prop) {
-              <div class="resultado-card" (click)="centrarEnInmueble(inmueble)">
-                <div class="card-body">
-                  <p class="card-precio">
-                    @if (inmueble.precio_venta) {
-                      💰 {{ inmueble.precio_venta | number }} €
-                    } @else if (inmueble.precio_alquiler) {
-                      💰 {{ inmueble.precio_alquiler | number }} €/mes
-                    }
-                  </p>
-                  <p class="card-direccion">
-                    <strong>{{ inmueble.direccion_prop }}</strong>
-                  </p>
-                  <p class="card-detalles">
-                    🛏️ {{ inmueble.nro_habitaciones_prop }} hab · 🚿 {{ inmueble.nro_banos_prop }} baños · 📐 {{ inmueble.metros_prop }} m²
-                  </p>
-                  <a
-                    [routerLink]="'/detalle-' + (inmueble.type === 'venta' ? 'venta' : 'alquiler') + '/' + inmueble.id_prop"
-                    class="card-enlace"
-                  >
-                    Ver detalle →
-                  </a>
-                </div>
+          <button class="btn-cerrar" (click)="cerrarPanel()" title="Cerrar panel">✕</button>
+        </div>
+        <div class="panel-lista">
+          @for (inmueble of resultados; track inmueble.id_prop) {
+            <div class="resultado-card" (click)="centrarEnInmueble(inmueble)">
+              <div class="card-body">
+                <p class="card-precio">
+                  {{ formatearPrecio(inmueble) }}
+                </p>
+                <p class="card-direccion">
+                  <strong>{{ inmueble.direccion_prop }}</strong>
+                </p>
+                <p class="card-detalles">
+                  🛏️ {{ inmueble.nro_habitaciones_prop }} hab · 🚿 {{ inmueble.nro_banos_prop }} baños · 📐 {{ inmueble.metros_prop }} m²
+                </p>
+                <a
+                  [routerLink]="'/detalle-' + tipoBusqueda + '/' + inmueble.id_prop"
+                  class="card-enlace"
+                >
+                  Ver detalle →
+                </a>
               </div>
-            }
-          </div>
+            </div>
+          }
         </div>
-      }
-
-      @if (!cargando && resultados.length === 0 && busquedaRealizada) {
-        <div class="panel-sin-resultados">
-          <p>😕 No se encontraron inmuebles en la zona seleccionada.</p>
-          <p class="sub">Intenta dibujar un área más amplia.</p>
-        </div>
-      }
+      </div>
     </div>
-  </div>
+  }
 </div>
