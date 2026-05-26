@@ -114,7 +114,8 @@ import { Auth } from '../../service/auth.service';
                                                     </div>
                                                 </div>
                                                 <div class="p-5 flex-1 flex flex-col">
-                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">{{ pub.direccion_prop || 'Dirección no disponible' }}</h3>
+                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1">{{ pub.direccion_prop || 'Dirección no disponible' }}{{ pub.numero_prop ? ', ' + pub.numero_prop : '' }}</h3>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ pub.poblacion_prop || '' }}{{ pub.poblacion_prop && pub.provincia_prop ? ', ' : '' }}{{ pub.provincia_prop || '' }}</p>
                                                     <p class="text-xl font-black text-emerald-600 dark:text-emerald-400 mb-3">{{ pub.precio_venta | number: '1.0-0' }} €</p>
                                                     <div class="flex flex-wrap gap-3 mb-4">
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -180,7 +181,8 @@ import { Auth } from '../../service/auth.service';
                                                     </div>
                                                 </div>
                                                 <div class="p-5 flex-1 flex flex-col">
-                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">{{ getDireccion(pub) }}</h3>
+                                                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1">{{ getDireccion(pub) }}</h3>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ pub.poblacion_prop || '' }}{{ pub.poblacion_prop && pub.provincia_prop ? ', ' : '' }}{{ pub.provincia_prop || '' }}</p>
                                                     <p class="text-xl font-black text-amber-600 dark:text-amber-400 mb-3">{{ pub.precio_alquiler | number: '1.0-0' }} € <span class="text-sm font-medium text-gray-400">/mes</span></p>
                                                     <div class="flex flex-wrap gap-3 mb-4">
                                                         <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -563,7 +565,8 @@ export class Publicaciones implements OnInit {
     }
 
     getDireccion(pub: any): string {
-        return pub.direccion_fisica || pub.direccion_prop || 'Dirección no disponible';
+        const dir = pub.direccion_fisica || pub.direccion_prop || 'Dirección no disponible';
+        return pub.numero_prop ? `${dir}, ${pub.numero_prop}` : dir;
     }
 
     onImgError(event: any) {

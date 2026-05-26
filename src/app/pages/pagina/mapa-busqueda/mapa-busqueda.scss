@@ -1,6 +1,6 @@
 .mapa-busqueda-container {
   padding: 1.5rem;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -23,98 +23,194 @@
     }
   }
 
-  .mapa-leaflet {
-    height: 550px;
-    width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    border: 1px solid #e2e8f0;
-    z-index: 1;
-    position: relative;
-  }
-
-  .mapa-loading-overlay {
+  // ── Layout: mapa a la izquierda, panel a la derecha ──────────────────
+  .mapa-contenido {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    font-size: 0.95rem;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
 
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid #e2e8f0;
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+  // ── Mapa (izquierda) ──────────────────────────────────────────────────
+  .mapa-izquierda {
+    flex: 1;
+    min-width: 0; // Evita que el flex-item se desborde
+
+    .mapa-leaflet {
+      height: 600px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      border: 1px solid #e2e8f0;
+      z-index: 1;
+      position: relative;
+    }
+
+    .mapa-loading-overlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 0.95rem;
+
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
     }
   }
 
-  .mapa-resultados {
-    margin-top: 1.5rem;
+  // ── Panel lateral derecho ─────────────────────────────────────────────
+  .mapa-panel-derecho {
+    width: 380px;
+    min-width: 380px;
+    max-height: 600px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.25rem;
+    box-sizing: border-box;
+    display: none; // Oculto por defecto
 
-    h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin: 0 0 1rem 0;
+    &.visible {
+      display: block; // Se muestra cuando hay resultados
     }
 
-    .resultados-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
+    // Scroll personalizado
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+      &:hover {
+        background: #94a3b8;
+      }
     }
 
+    // Loading dentro del panel
+    .panel-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 3rem 1rem;
+      color: #64748b;
+      font-size: 0.95rem;
+
+      .spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+    }
+
+    // Cabecera del panel
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+      }
+
+      .btn-cerrar {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        line-height: 1;
+
+        &:hover {
+          background: #f1f5f9;
+          color: #475569;
+        }
+      }
+    }
+
+    // Lista de resultados
+    .panel-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    // Tarjeta de resultado
     .resultado-card {
-      background: #ffffff;
+      background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 10px;
-      padding: 1rem 1.25rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
       &:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
+        background: #f1f5f9;
+        border-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        transform: translateX(4px);
       }
 
       .card-body {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-      }
-
-      .card-direccion {
-        font-size: 1rem;
-        color: #1e293b;
-        margin: 0;
-        line-height: 1.4;
+        gap: 0.3rem;
       }
 
       .card-precio {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         font-weight: 700;
         color: #059669;
         margin: 0;
       }
 
+      .card-direccion {
+        font-size: 0.9rem;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.3;
+      }
+
       .card-detalles {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #64748b;
         margin: 0;
       }
 
       .card-enlace {
         display: inline-block;
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
+        margin-top: 0.4rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #3b82f6;
         text-decoration: none;
@@ -126,20 +222,36 @@
         }
       }
     }
+
+    // Sin resultados
+    .panel-sin-resultados {
+      padding: 2rem 1rem;
+      text-align: center;
+
+      p {
+        margin: 0 0 0.5rem;
+        color: #991b1b;
+        font-size: 0.95rem;
+      }
+
+      .sub {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin: 0;
+      }
+    }
   }
 
-  .mapa-sin-resultados {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    text-align: center;
+  // ── Responsive: en pantallas pequeñas, el panel va debajo ────────────
+  @media (max-width: 1024px) {
+    .mapa-contenido {
+      flex-direction: column;
+    }
 
-    p {
-      margin: 0;
-      color: #991b1b;
-      font-size: 0.95rem;
+    .mapa-panel-derecho {
+      width: 100%;
+      min-width: 100%;
+      max-height: none;
     }
   }
 }

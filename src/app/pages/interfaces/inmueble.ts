@@ -61,6 +61,8 @@ export interface TarjetaAlquiler {
 
     direccion_prop: string;
 
+    numero_prop?: number;
+
     provincia_prop: string;
 
     poblacion_prop?: string;
@@ -99,6 +101,8 @@ export interface TarjetaVenta {
     nro_ref_prop: string;
 
     direccion_prop: string;
+
+    numero_prop?: number;
 
     provincia_prop: string;
 

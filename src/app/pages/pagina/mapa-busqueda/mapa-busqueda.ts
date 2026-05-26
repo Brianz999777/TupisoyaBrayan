@@ -109,7 +109,7 @@ export class MapaBusqueda implements AfterViewInit, OnDestroy {
         marker: false,
         circlemarker: false,
         polygon: {
-          allowIntersection: false, // Evita que el usuario cruce líneas
+          allowIntersection: true, // Permitir que el usuario dibuje figuras de cualquier número de puntos
           shapeOptions: {
             color: '#3b82f6', // Azul primary
             weight: 2,
@@ -344,5 +344,35 @@ export class MapaBusqueda implements AfterViewInit, OnDestroy {
     this.markersLayer.clearLayers();
     this.resultados = [];
     this.busquedaRealizada = false;
+  }
+
+  // -----------------------------------------------------------------------
+  // Acciones del panel lateral
+  // -----------------------------------------------------------------------
+
+  /** Cierra el panel lateral de resultados */
+  cerrarPanel(): void {
+    this.resultados = [];
+    this.busquedaRealizada = false;
+    this.markersLayer.clearLayers();
+    this.drawnItems.clearLayers();
+  }
+
+  /** Centra el mapa en un inmueble específico y abre su popup */
+  centrarEnInmueble(inmueble: PropiedadVentaCardDTO): void {
+    const { ubicacion } = inmueble;
+    if (!ubicacion || ubicacion.lat == null || ubicacion.lng == null) return;
+
+    this.map.setView([ubicacion.lat, ubicacion.lng], 16);
+
+    // Buscar el marcador correspondiente y abrir su popup
+    this.markersLayer.eachLayer((layer: any) => {
+      if (layer instanceof L.Marker) {
+        const markerLatLng = layer.getLatLng();
+        if (markerLatLng.lat === ubicacion.lat && markerLatLng.lng === ubicacion.lng) {
+          layer.openPopup();
+        }
+      }
+    });
   }
 }
