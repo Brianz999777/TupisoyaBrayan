@@ -1,12 +1,12 @@
 {
   "/tupisoya/*": {
-    "target": "http://localhost:8080",
+    "target": "https://tupisoyajava.onrender.com",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
   },
   "/tupisoya/**": {
-    "target": "http://localhost:8080",
+    "target": "https://tupisoyajava.onrender.com",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
