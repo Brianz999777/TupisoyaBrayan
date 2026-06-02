@@ -8,7 +8,7 @@ import { Alerta } from '../interfaces/alerta';
 })
 export class AlertaService {
   private http = inject(HttpClient);
-  private readonly baseUrl = '/tupisoya/alertas';
+  private readonly baseUrl = 'https://tupisoyajava.onrender.com/tupisoya/alertas';
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');

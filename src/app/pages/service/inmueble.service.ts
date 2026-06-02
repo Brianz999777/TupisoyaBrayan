@@ -12,8 +12,8 @@ import { BusquedaZonaDTO, PropiedadVentaCardDTO, PropiedadAlquilerCardDTO } from
 export class InmuebleService {
   private http = inject(HttpClient);
   // Asumiendo que esta es tu URL base para inmuebles (ajústala según tu backend)
-  private readonly baseUrl = '/tupisoya/inmuebles';
-  private readonly emailUrl = '/tupisoya/email';
+  private readonly baseUrl = 'https://tupisoyajava.onrender.com/tupisoya/inmuebles';
+  private readonly emailUrl = 'https://tupisoyajava.onrender.com/tupisoya/email';
 
   getVentas(): Observable<TarjetaVenta[]> {
     console.log(`[InmuebleService] 🔍 GET ventas → ${this.baseUrl}/ventas`);

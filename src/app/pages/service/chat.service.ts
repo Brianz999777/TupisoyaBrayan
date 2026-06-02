@@ -12,7 +12,7 @@ export class ChatService {
   private http = inject(HttpClient);
   private auth = inject(Auth);
   private wsService = inject(ChatWebSocketService);
-  private readonly api_url = '/tupisoya/api/chat';
+  private readonly api_url = 'https://tupisoyajava.onrender.com/tupisoya/api/chat';
 
   private mensaje_source = new BehaviorSubject<MensajeChat | null>(null);
   public nuevo_mensaje$ = this.mensaje_source.asObservable();

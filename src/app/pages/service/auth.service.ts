@@ -10,7 +10,7 @@ import { Subject, tap } from 'rxjs';
 })
 export class Auth {
 
-  private readonly baseUrl = '/tupisoya';
+  private readonly baseUrl = 'https://tupisoyajava.onrender.com/tupisoya';
 
   private readonly tokenKey = 'authToken';
   private readonly userKey = 'authUser';

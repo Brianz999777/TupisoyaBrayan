@@ -8,7 +8,7 @@ import { Notificacion } from '../interfaces/notificacion';
 })
 export class NotificacionService {
   private http = inject(HttpClient);
-  private readonly baseUrl = '/tupisoya/notificacion';
+  private readonly baseUrl = 'https://tupisoyajava.onrender.com/tupisoya/notificacion';
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');

@@ -17,7 +17,7 @@ export class ChatWebSocketService implements OnDestroy {
     if (this.conectado) return;
 
     this.client = new Client({
-      webSocketFactory: () => new SockJS(`/tupisoya/ws-chat`),
+      webSocketFactory: () => new SockJS(`https://tupisoyajava.onrender.com/tupisoya/ws-chat`),
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },
