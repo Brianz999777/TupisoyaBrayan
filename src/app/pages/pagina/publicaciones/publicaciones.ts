@@ -630,6 +630,7 @@ export class Publicaciones implements OnInit {
             puerta_prop: f.puerta_prop || '',
             cp_prop: f.cp_prop || '',
             provincia_prop: f.provincia_prop || '',
+            poblacion_prop: f.poblacion_prop || '',
             nro_catastral_prop: f.nro_catastral_prop || '',
             ascensor_prop: !!f.ascensor_prop,
             metros_prop: f.metros_prop || 0,
